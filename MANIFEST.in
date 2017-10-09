@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include firetesting *.css
+recursive-include firetesting *.csv
+recursive-include firetesting *.html
+recursive-include firetesting *.ico
+recursive-include firetesting *.js
+recursive-include firetesting *.json
+recursive-include firetesting *.md
+recursive-include firetesting *.png
+recursive-include firetesting *.py
+recursive-include firetesting *.svg
+recursive-include firetesting *.txt
+recursive-exclude firetesting *.pyc
