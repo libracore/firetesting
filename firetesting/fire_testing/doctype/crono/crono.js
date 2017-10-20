@@ -10,5 +10,10 @@ frappe.ui.form.on('Crono', {
 				}
 			}
 		}
+		cur_frm.add_fetch('quotation_number','transaction_date','quotation_exit');
+	},
+	
+	quotation: function(frm) {
+		
 	}
 });
