@@ -11,9 +11,27 @@ frappe.ui.form.on('Crono', {
 			}
 		}
 		cur_frm.add_fetch('quotation_number','transaction_date','quotation_exit');
+		if(cur_frm.doc.crono_status=='Work in progress') {
+			frappe.msgprint('For status work in progress, the material must be available!');
+			if(!cur_frm.doc.material.receive) {
+				frappe.msgprint('For status work in progress, the material must be available!');
+				cur_frm.set_value('crono_status', '');
+			}
+		}
 	},
 	
-	quotation: function(frm) {
-		
+	crono_status: function(frm) {
+		if(!cur_frm.doc.material_receive && cur_frm.doc.crono_status=='Work in progress') {
+			cur_frm.set_value('crono_status', '');
+			frappe.msgprint('For status work in progress, the material must be available!');
+		}
+		if(!cur_frm.doc.material_receive && cur_frm.doc.crono_status=='Finish') {
+			cur_frm.set_value('crono_status', '');
+			frappe.msgprint('For status Finish, the material must be available!');
+		}
+		if(!cur_frm.doc.quotation_exit && cur_frm.doc.crono_status!='') {
+			cur_frm.set_value('crono_status', '');
+			frappe.msgprint('At first, a quotation must be done!');
+		}
 	}
 });
