@@ -17,7 +17,9 @@ frappe.ui.form.on('Crono', {
 				}
 			}
 		}
+		
 		cur_frm.add_fetch('quotation_number','transaction_date','quotation_exit');
+		
 	},
 	
 	crono_status: function(frm) {
@@ -36,6 +38,20 @@ frappe.ui.form.on('Crono', {
 		if(!cur_frm.doc.sales_order && cur_frm.doc.crono_status!='' && cur_frm.doc.crono_status!='Backlog') {
 			cur_frm.set_value('crono_status', '');
 			frappe.msgprint('At first, a sales order must exist!');
+		}
+	},
+	
+	sales_order: function(frm) {
+		if(cur_frm.doc.sales_order!='') {
+			cur_frm.set_df_property('sales_order','set_only_once',1);
+		}
+	},
+	
+	material_receive: function(frm) {
+		if(!cur_frm.doc.material_receive) {
+			cur_frm.set_df_property('material','reqd',0);
+		}else{
+			cur_frm.set_df_property('material','reqd',1);
 		}
 	}
 });
