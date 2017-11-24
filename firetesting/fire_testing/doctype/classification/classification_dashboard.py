@@ -5,9 +5,9 @@ def get_data():
       'fieldname': 'classification',
       'transactions': [
          {
-            'label': _('Cronos'),
+            'label': _('Related records'),
             'items': ['Crono']
-         }
+         },
          {
             'label': _('Information'),
             'items': ['Annex A']
