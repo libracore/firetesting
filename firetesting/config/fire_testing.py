@@ -76,7 +76,7 @@ def get_data():
 					"label": _("Technical data sheet"),
 					"description": _("Technical data sheet"),
 				},
-
+				{
 					"type": "doctype",
 					"name": "EXAP calculation",
 					"label": _("EXAP calculation"),
