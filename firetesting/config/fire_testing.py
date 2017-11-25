@@ -53,5 +53,35 @@ def get_data():
 					"description": _("Test 13 - EN 60754-2 Accidity")
 				}
 			]
+		},
+		{
+			"label": _("Reference documents"),
+			"icon": "fa fa-file-text",
+			"items": [
+				{
+					"type": "doctype",
+					"name": "Test request",
+					"label": _("Test request",
+					"description": _("Test request"),
+				},
+				{
+					"type": "doctype",
+					"name": "Sample identification",
+					"label": _("Sample identification"),
+					"description": _("Sample identification"),
+				},
+				{
+					"type": "doctype",
+					"name": "Technical data sheet",
+					"label": _("Technical data sheet",
+					"description": _("Technical data sheet"),
+				},
+
+					"type": "doctype",
+					"name": "EXAP calculation",
+					"label": _("EXAP calculation"),
+					"description": _("EXAP calculation")
+				}
+			]
 		}
 	]
