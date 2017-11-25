@@ -61,7 +61,7 @@ def get_data():
 				{
 					"type": "doctype",
 					"name": "Test request",
-					"label": _("Test request",
+					"label": _("Test request"),
 					"description": _("Test request"),
 				},
 				{
@@ -73,7 +73,7 @@ def get_data():
 				{
 					"type": "doctype",
 					"name": "Technical data sheet",
-					"label": _("Technical data sheet",
+					"label": _("Technical data sheet"),
 					"description": _("Technical data sheet"),
 				},
 
