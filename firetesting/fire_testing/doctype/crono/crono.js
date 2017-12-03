@@ -10,13 +10,20 @@ frappe.ui.form.on('Crono', {
 					"customer": frm.doc.customer
 				}
 			}
-		}
+		};
+                cur_frm.fields_dict['classification'].get_query = function(doc) {
+                        return {
+                                filters: {
+                                        "customer": frm.doc.customer
+                                }
+                        }
+                };
 	},
 	setup: function(frm) {
-		cur_frm.add_fetch('sales_order','material','material');
+		//cur_frm.add_fetch('sales_order','material','material');
 		cur_frm.add_fetch('sales_order','customer','customer');
 	},
 	sales_order: function(frm) {
-		cur_frm.add_fetch('sales_order','material','material');
+		//cur_frm.add_fetch('sales_order','material','material');
 	}
 });
