@@ -22,6 +22,9 @@ app_license = "GPL"
 # web_include_css = "/assets/firetesting/css/firetesting.css"
 # web_include_js = "/assets/firetesting/js/firetesting.js"
 
+# for desk css
+app_include_css = ["/assets/css/firetesting.min.css"]
+
 # include js in page
 # page_js = {"page" : "public/js/file.js"}
 
