@@ -51,7 +51,14 @@ def get_data():
 					"name": "Test 13",
 					"label": _("Test 13 - EN 60754-2 Accidity"),
 					"description": _("Test 13 - EN 60754-2 Accidity")
-				}
+				},
+                                {
+                                        "type": "doctype",
+                                        "name": "Other test",
+                                        "label": _("Other test"),
+                                        "description": _("Other test")
+                                }
+
 			]
 		},
 		{
