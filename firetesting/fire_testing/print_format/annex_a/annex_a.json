@@ -1,0 +1,23 @@
+{
+ "align_labels_right": 1, 
+ "creation": "2017-11-30 17:01:06.157288", 
+ "css": ".border_solid {\n  border: 1px solid black;\n}", 
+ "custom_format": 0, 
+ "disabled": 0, 
+ "doc_type": "Annex A", 
+ "docstatus": 0, 
+ "doctype": "Print Format", 
+ "font": "Default", 
+ "format_data": "[{\"fieldname\": \"print_heading_template\", \"fieldtype\": \"Custom HTML\", \"options\": \"<table style=\\\"width: 100%; margin-bottom: 20px;\\\">\\n   <tr>\\n    <td style=\\\"width: 30%; text-align: left;\\\"><img src=\\\"/files/LSF_logo_275x100px.png\\\" style=\\\"width: 275px !important; height: 100px; \\\"/></td>\\n    <td style=\\\"width: 70%; height:100px; vertical-align: middle !important; text-align: right;\\\">\\n<strong>L.S.Fire Testing Institute S.R.L.</strong><br />\\nLaboratorio NORD - Via Olgiate, 15 - Oltrona di S.Mamette CO - Italy<br />\\nLaboratorio SUD - Via Bonifica, 4 - Controguerra TE - Italy<br />\\nP.IVA IT0307011013\\n    </td>\\n   </tr>\\n   <tr style=\\\"border-top: solid 1px silver; border-bottom: solid 1px silver;\\\">\\n     <td style=\\\"text-align: left;\\\">{{ _(\\\"Template\\\") }}: Annex A</td>\\n     <td style=\\\"text-align: right;\\\">{{ _(\\\"Document reference\\\") }}: {{ doc.classification }} Annex A</td>\\n   </tr>\\n</table>\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"options\": \"<h1>Annex A to {{ doc.classification }}</h1>\\n<p><br /></p>\\n<table>\\n <tr>\\n  <td>Cable type</td>\\n  <td>{{ doc.cable_type }}</td>\\n </tr>\\n <tr>\\n  <td>Date</td>\\n  <td>{{ doc.date }}</td>\\n </tr>\\n</table>\\n<p><br /></p>\", \"fieldname\": \"_custom_html\", \"fieldtype\": \"HTML\", \"label\": \"Custom HTML\"}, {\"print_hide\": 0, \"options\": \"<table>\\n <tr>\\n    <th class=\\\"border_solid\\\">OEM</th>\\n    <th class=\\\"border_solid\\\">Name</th>\\n </tr>\\n {% for n in doc.oems %}\\n <tr>\\n    <td class=\\\"border_solid\\\">{{ n.oem }}</td>\\n    <td class=\\\"border_solid\\\">{{ n.name}}</td>\\n </tr>\\n {% endfor %}\\n</table>\\n<p><br /></p>\", \"fieldname\": \"_custom_html\", \"fieldtype\": \"HTML\", \"label\": \"Custom HTML\"}, {\"print_hide\": 0, \"options\": \"<table  style=\\\"width: 100%;\\\">\\n <tr>\\n    <th class=\\\"border_solid\\\">Item no.</th>\\n    <th class=\\\"border_solid\\\">Description</th>\\n    <th class=\\\"border_solid\\\">OEM</th>\\n    <th class=\\\"border_solid\\\">Base classification cable</th>\\n    <th class=\\\"border_solid\\\">Doc OEM Annex A</th>\\n    <th class=\\\"border_solid\\\">Main classification</th>\\n    <th class=\\\"border_solid\\\">Additional classification</th>\\n </tr>\\n {% for n in doc.materials %}\\n <tr>\\n    <td class=\\\"border_solid\\\">{{ n.material }}</td>\\n    <td class=\\\"border_solid\\\">{{ n.description }}</td>\\n    <td class=\\\"border_solid\\\">{{ n.oem }}</td>\\n    <td class=\\\"border_solid\\\">{% if n.is_base_classification_cable %}X{% endif %}</td>\\n    <td class=\\\"border_solid\\\">{{ n.doc_oem_annex }}</td>\\n    <td class=\\\"border_solid\\\">{{ n.main_classification }}</td>\\n    <td class=\\\"border_solid\\\">{{ n.additional_classification }}</td>\\n </tr>\\n {% endfor %}\\n</table>\", \"fieldname\": \"_custom_html\", \"fieldtype\": \"HTML\", \"label\": \"Custom HTML\"}]", 
+ "idx": 0, 
+ "line_breaks": 1, 
+ "modified": "2017-12-01 21:02:42.280144", 
+ "modified_by": "Administrator", 
+ "module": "Fire Testing", 
+ "name": "Annex A", 
+ "owner": "Administrator", 
+ "print_format_builder": 1, 
+ "print_format_type": "Server", 
+ "show_section_headings": 1, 
+ "standard": "Yes"
+}
