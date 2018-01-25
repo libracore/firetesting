@@ -18,14 +18,18 @@ frappe.ui.form.on('Crono', {
                 }
             }
         };
-        if(frm.doc.docstatus==0) {
-        frm.add_custom_button(__("Lock"), function() {
-                lock(frm);
-            });
-        } else {
-        frm.add_custom_button(__("Unlock"), function() {
-                unlock(frm);
-            });
+        
+        // provide lock & unlock for system manager and crono manager
+        if ((frappe.user.has_role("System Manager")) || (frappe.user.has_role("Crono Manager"))) {
+            if(frm.doc.docstatus==0) {
+            frm.add_custom_button(__("Lock"), function() {
+                    lock(frm);
+                });
+            } else {
+            frm.add_custom_button(__("Unlock"), function() {
+                    unlock(frm);
+                });
+            }
         }
 	},
 	setup: function(frm) {
