@@ -7,4 +7,6 @@ import frappe
 from frappe.model.document import Document
 
 class EN50399(Document):
-	pass
+    def onload(self):
+        """Runs when document is loaded (not created)"""
+        pass
