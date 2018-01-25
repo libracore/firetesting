@@ -30,7 +30,7 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
-					"name": "Test 10",
+					"name": "EN 50399",
 					"label": _("Test 10 - EN 50399 Burner"),
 					"description": _("Test 10 - EN 50399 Burner")
 				},

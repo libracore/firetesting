@@ -6,7 +6,7 @@ def get_data():
       'transactions': [
          {
             'label': _('Tests'),
-            'items': ['Test 10', 'Test 11', 'Test 12', 'Test 13']
+            'items': ['EN 50399', 'Test 11', 'Test 12', 'Test 13']
          },
          {
             'label': _('Documents'),
