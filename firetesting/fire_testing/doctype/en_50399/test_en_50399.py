@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2017, libracore GmbH and Contributors
+# Copyright (c) 2018, libracore GmbH and Contributors
 # See license.txt
 from __future__ import unicode_literals
 
 import frappe
 import unittest
 
-class TestTest10(unittest.TestCase):
+class TestEN50399(unittest.TestCase):
 	pass
