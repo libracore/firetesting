@@ -62,30 +62,19 @@ function get_material(frm) {
 }
 
 function read_raw_data(frm) {
-    //window.alert("Dialog!");
     var d = new frappe.ui.Dialog({
     	'title': 'Read raw data',
     	'fields': [
-            {'fieldname': 'ht', 'fieldtype': 'HTML'},
-            {'label': 'File', 'fieldname': 'file', 'fieldtype': 'Attach'}
+            {'fieldname': 'ht', 'fieldtype': 'HTML'}
         ],
         primary_action: function() {
+            // hide form
             d.hide();
-            //window.alert("before");
+            // get file object
             var file = document.getElementById("input_file").files[0];
-            //window.alert("after" + file);
+            // and read the file to the form
             read_file(frm, file);
-            //frappe.msgprint(file);
-            //var args = d.get_values();
-            /*if(!args) return;
-            frappe.call({
-                        type: "POST",
-    	                method: "submit_harvest",
-                        args: {            
-                                'doc': cur_frm.doc,            
-                                'harvest_date': args.harvest_date
-                       }
-            });*/
+
         }
     });
     
