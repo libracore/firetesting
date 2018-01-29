@@ -83,5 +83,18 @@ def get_data():
 					"description": _("EXAP calculation")
 				}
 			]
-		}
+		},
+		{
+			"label": _("Reports"),
+			"icon": "fa fa-file-text-o",
+			"items": [
+				{
+					"type": "report",
+                    "doctype": "Material",
+					"name": "Unidentified material",
+					"label": _("Unidentified material"),
+					"description": _("Unidentified material"),
+				}
+			]
+		},
 	]
