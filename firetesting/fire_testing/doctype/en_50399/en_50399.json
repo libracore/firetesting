@@ -1437,7 +1437,7 @@
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 0, 
- "modified": "2018-01-25 17:33:29.123771", 
+ "modified": "2018-01-30 00:05:54.916151", 
  "modified_by": "Administrator", 
  "module": "Fire Testing", 
  "name": "EN 50399", 
@@ -1445,7 +1445,7 @@
  "owner": "Administrator", 
  "permissions": [
   {
-   "amend": 0, 
+   "amend": 1, 
    "apply_user_permissions": 0, 
    "cancel": 1, 
    "create": 1, 
@@ -1478,14 +1478,14 @@
    "print": 1, 
    "read": 1, 
    "report": 1, 
-   "role": "Crono User", 
+   "role": "Crono user", 
    "set_user_permissions": 0, 
    "share": 1, 
    "submit": 0, 
    "write": 1
   }, 
   {
-   "amend": 0, 
+   "amend": 1, 
    "apply_user_permissions": 0, 
    "cancel": 1, 
    "create": 1, 
@@ -1498,7 +1498,7 @@
    "print": 1, 
    "read": 1, 
    "report": 1, 
-   "role": "Crono Manager", 
+   "role": "Crono manager", 
    "set_user_permissions": 0, 
    "share": 1, 
    "submit": 1, 
