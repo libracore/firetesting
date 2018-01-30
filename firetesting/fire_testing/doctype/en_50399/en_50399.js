@@ -6,11 +6,11 @@ frappe.ui.form.on('EN 50399', {
         // add menu buttons
         frm.page.add_menu_item(__("Export transfer file"), function() {
             // create a transfer file from record
-            
+            export_transfer_file(frm);
 		});
         frm.page.add_menu_item(__("Import data from transfer file"), function() {
             // load data from transfer file
-            
+            import_transfer_file(frm);
 		});        
         // add utility buttons
         frm.add_custom_button(__("Load raw data"), function() {
@@ -108,4 +108,88 @@ function read_file(frm, file) {
     {
         frappe.msgprint(__("Please select a file."), __("Information"));
     }
+}
+
+function import_transfer_file(frm) {
+    var d = new frappe.ui.Dialog({
+    	'title': 'Import transfer file (CSV)',
+    	'fields': [
+            {'fieldname': 'ht', 'fieldtype': 'HTML'}
+        ],
+        primary_action: function() {
+            // hide form
+            d.hide();
+            // get file object
+            var file = document.getElementById("input_file").files[0];
+            // and read the file to the form
+            read_import_file(frm, file);
+
+        }
+    });
+    
+    d.fields_dict.ht.$wrapper.html('<input type="file" id="input_file" />');
+    
+    d.show();
+}
+
+function read_import_file(frm, file) {
+    // read the file 
+    var content = "";
+    if (file) {
+        // create a new reader instance
+        var reader = new FileReader();
+        // assign load event to process the file
+        reader.onload = function (event) {           
+            // read file content
+            content = event.target.result;
+
+            // import content
+            frappe.call({
+                method: 'firetesting.fire_testing.doctype.en_50399.en_50399.import_transfer_file',
+                args: { 
+                    'content': content
+                },
+                callback: function(r) {
+                    if (r.message) { 
+                        frappe.msgprint(r.message.output);
+                    }
+                }
+            });
+        }
+        // assign an error handler event
+        reader.onerror = function (event) {
+            frappe.msgprint(__("Error reading file"), __("Error"));
+        }
+        
+        reader.readAsText(file, "UTF-8");
+    }
+    else
+    {
+        frappe.msgprint(__("Please select a file."), __("Information"));
+    }
+}
+
+function export_transfer_file(frm) {
+    // export transfer file
+    frappe.call({
+        method: 'firetesting.fire_testing.doctype.en_50399.en_50399.export_transfer_file',
+        callback: function(r) {
+            if (r.message) { 
+                download("transfer.csv", r.message.content);
+            }
+        }
+    });
+}
+
+function download(filename, content) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(content));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
 }
