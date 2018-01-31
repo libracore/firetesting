@@ -183,6 +183,9 @@ function export_transfer_file(frm) {
     // export transfer file
     frappe.call({
         method: 'firetesting.fire_testing.doctype.en_50399.en_50399.export_transfer_file',
+        args: {
+            'doc_name': frm.doc.name
+        },
         callback: function(r) {
             if (r.message) { 
                 download("transfer.csv", r.message.content);
