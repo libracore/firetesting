@@ -151,7 +151,8 @@ function read_import_file(frm, file) {
                 },
                 callback: function(r) {
                     if (r.message) { 
-                        frappe.msgprint(r.message.output);
+                        assign_imported_values(r.message.data);
+                        frappe.msgprint(r.message.output);                        
                     }
                 }
             });
@@ -167,6 +168,15 @@ function read_import_file(frm, file) {
     {
         frappe.msgprint(__("Please select a file."), __("Information"));
     }
+}
+
+function assign_imported_values(data) {
+    cur_frm.set_value("date_of_test", data.date_of_test);
+    cur_frm.set_value("operator", data.operator);
+    cur_frm.set_value("logger_data", data.raw);
+    cur_frm.set_value("temperature", data.env_temperature);
+    cur_frm.set_value("pressure", data.env_pressure);
+    cur_frm.set_value("relative_humidity", data.env_humidity);            
 }
 
 function export_transfer_file(frm) {
