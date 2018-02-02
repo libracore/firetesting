@@ -1,7 +1,7 @@
 {
-	"css/firetesting.min.css": [
-		"public/css/firetesting.css"
-	],
+    "css/firetesting.min.css": [
+        "public/css/firetesting.css"
+    ],
     "js/xlsx.full.min.js": [
         "public/js/xlsx.full.min.js"
     ]
