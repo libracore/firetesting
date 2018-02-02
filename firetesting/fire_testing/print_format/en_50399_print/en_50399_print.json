@@ -1,0 +1,22 @@
+{
+ "align_labels_right": 0, 
+ "creation": "2018-02-02 20:55:23.080601", 
+ "custom_format": 0, 
+ "disabled": 0, 
+ "doc_type": "EN 50399", 
+ "docstatus": 0, 
+ "doctype": "Print Format", 
+ "font": "Default", 
+ "format_data": "[{\"fieldname\": \"print_heading_template\", \"fieldtype\": \"Custom HTML\", \"options\": \"<div class=\\\"print-heading\\\">\\t\\t\\t\\t<h2>EN 50399<br><small>{{ doc.name }}</small>\\t\\t\\t\\t</h2></div>\"}, {\"fieldtype\": \"Section Break\", \"label\": \"Content\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"options\": \"<center><h3>Test Report</h3></center>\\n<center><h1>EN 50399</h1></center>\\n\\n<table style=\\\"width: 100%; border: 1px solid black\\\">\\n  <tr>\\n    <td>Customer</td>\\n    <td>{{ doc.customer }}<br>\\n    {% set crono = frappe.get_doc(\\\"Crono\\\", doc.crono) %} \\n    {% set sales_order = frappe.get_doc(\\\"Sales Order\\\", crono.sales_order) %} \\n    {{ sales_order.address_display }}\\n    </td>\\n  </tr>\\n  <tr>\\n    <td>Product</td>\\n    {% set material = frappe.get_doc(\\\"Material\\\", doc.material) %} \\n    <td>{{ material.description }}</td>\\n  </tr>\\n  <tr>\\n    <td>Identification</td>\\n    <td>Material code: {{ material.name }}, Production lot number: {{ material.lot_number }}</td>\\n  </tr>\\n</table>\\n\\n<p></p>\\n<table style=\\\"width:100%;\\\">\\n  <tr>\\n    <td>Date of test request</td>\\n    <td>{{ sales_order.transaction_date}}</td>\\n  </tr>\\n  <tr>\\n    <td>Date of sample receipt</td>\\n    <td>{{ material.date_of_arrival }}</td>\\n  </tr>\\n  <tr>\\n    <td>Date of test execution</td>\\n    <td>{{ doc.date_of_test }}</td>\\n  <tr>\\n  <tr>\\n    <td>Laboratory</td>\\n    <td></td>\\n  </tr>\\n  <tr>\\n    <td>Certificate date</td>\\n    <td>{{ doc.certificate_date }}</td>\\n  </tr>\\n</table>\\n\\n<p></p>\\n\\n<h3>Conclusions</h3>\\n<p>Burner output: {{ doc.burner_output }} kW</p>\\n\", \"fieldname\": \"_custom_html\", \"fieldtype\": \"HTML\", \"label\": \"Custom HTML\"}]", 
+ "idx": 0, 
+ "line_breaks": 0, 
+ "modified": "2018-02-02 21:18:37.832340", 
+ "modified_by": "Administrator", 
+ "module": "Fire Testing", 
+ "name": "EN 50399 Print", 
+ "owner": "Administrator", 
+ "print_format_builder": 1, 
+ "print_format_type": "Server", 
+ "show_section_headings": 0, 
+ "standard": "Yes"
+}
