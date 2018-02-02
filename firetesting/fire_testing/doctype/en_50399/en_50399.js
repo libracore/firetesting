@@ -63,7 +63,7 @@ function get_material(frm) {
 
 function read_raw_data(frm) {
     var d = new frappe.ui.Dialog({
-    	'title': 'Read raw data',
+    	'title': 'Read raw data (xlsx)',
     	'fields': [
             {'fieldname': 'ht', 'fieldtype': 'HTML'}
         ],
@@ -73,7 +73,7 @@ function read_raw_data(frm) {
             // get file object
             var file = document.getElementById("input_file").files[0];
             // and read the file to the form
-            read_file(frm, file);
+            read_raw_file(frm, file);
 
         }
     });
@@ -83,26 +83,28 @@ function read_raw_data(frm) {
     d.show();
 }
 
-function read_file(frm, file) {
+function read_raw_file(frm, file) {
     // read the file 
     var content = "";
     if (file) {
-        // create a new reader instance
+        /* create new reader instance */
         var reader = new FileReader();
-        // assign load event to process the file
-        reader.onload = function (event) {           
-            // read file content
-            content = event.target.result;
-
-            // write content to form raw field
-            cur_frm.set_value('logger_data', content);
+        reader.onload = function(e) {
+            /* read the file */
+            var data = e.target.result;
+            /* load the workbook */
+            var workbook = XLSX.read(data, {type: 'binary'});
+            var first_sheet_name = workbook.SheetNames[0];
+            /* convert content to csv */
+            var csv = XLSX.utils.sheet_to_csv(workbook.Sheets[first_sheet_name]);
+            /* write content to form raw field */
+            cur_frm.set_value('logger_data', csv);
         }
         // assign an error handler event
         reader.onerror = function (event) {
             frappe.msgprint(__("Error reading file"), __("Error"));
         }
-        
-        reader.readAsText(file, "UTF-8");
+        reader.readAsBinaryString(file); 
     }
     else
     {
