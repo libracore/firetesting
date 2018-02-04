@@ -97,4 +97,16 @@ def get_data():
 				}
 			]
 		},
+		{
+			"label": _("Configuration"),
+			"icon": "fa fa-cogs",
+			"items": [
+				{
+					"type": "doctype",
+					"name": "Test Apparatus",
+					"label": _("Test Apparatus"),
+					"description": _("Test Apparatus"),
+				}
+			]
+		}
 	]
