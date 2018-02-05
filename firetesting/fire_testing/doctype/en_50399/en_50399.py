@@ -13,10 +13,9 @@ class EN50399(Document):
 
 """ This function will import a transfer file content into the test record """
 @frappe.whitelist()
-def import_transfer_file(content):
+def import_transfer_file(content, doc_name):
     # separate content into lines
     lines = content.split("\n")
-    data = {}
     if len(lines) > 0:
         # find out if separator is tab or comma
         fields = lines[0].split('\t')
@@ -30,19 +29,24 @@ def import_transfer_file(content):
                 separator = ";"
                 
         # read out values
-
-        data['date_of_test'] = assert_date(lines[5].split(separator)[1])
-        data['operator'] = lines[35].split(separator)[1]
-        data['env_pressure'] = lines[41].split(separator)[1]
-        data['env_humidity'] = lines[42].split(separator)[1]
-        data['env_temperature'] = lines[43].split(separator)[1]
+        # initialise document
+        doc = frappe.get_doc("EN 50399", doc_name)
+        doc.date_of_test = assert_date(lines[5].split(separator)[1])
+        doc.operator = lines[35].split(separator)[1]
+        doc.pressure = lines[41].split(separator)[1]
+        doc.relative_humidity = lines[42].split(separator)[1]
+        doc.temperature = lines[43].split(separator)[1]
 
         raw = ""
         for line in lines:
             raw = raw + separator.join(line.split(separator)[2:]) + "\n"
-        data['raw'] = raw
+            
+        doc.logger_data = raw
         
-    return { 'output': 'Transfer file imported', 'data': data }
+        # store values
+        doc.save()
+        
+    return { 'output': 'Transfer file imported' }
 
 def assert_date(date_str):
     if "/" in date_str:
@@ -175,12 +179,13 @@ def export_transfer_file(doc_name):
     info_content_lines[67] = str(doc.damage_zone_front / 1000)
     info_head_lines[75] = "HRR level (kW)"
     
+    # combine general information and data vectors
     for i in range(0, length):
         content = (content + 
             "{0},{1},{2}\n".format(info_head_lines[i], info_content_lines[i], lines[i]))
         
     return { 'content': content }
-
+    
 def get_normed_date(date):
     # converts YYYY-MM-DD to DD/MM/YYYY
     if "-" in str(date):
@@ -188,3 +193,32 @@ def get_normed_date(date):
         return "{0}/{1}/{2}".format(date_parts[2], date_parts[1], date_parts[0])
     else:
         return date
+
+""" This function is used to import and normalise data from the data logger 
+    raw: string with the data
+    doc_name: name of this document record
+"""
+@frappe.whitelist()
+def convert_data(raw, doc_name):
+    raw_lines = raw.split('\n')
+    # find start point: where burner output > 15 kW
+    for i in range(1, len(raw_lines) - 1):
+        fields = raw_lines[i].split(',')
+        if fields[11] > 15:
+            start_line_index = i
+            break
+    
+    lines = "time (s),Gas MFM (mg/s),DPT (Pa),Transmission (%),O2 (%),CO2 (%),Amb T (K),T_Duct1 (K),T_Duct2 (K),T_Duct3 (K),CO (%),APT (kPa),Air MFM (mg/s),PDM (-),PDC (-)"
+    lines = lines + "\n"
+    lines = lines + raw_lines[start_line_index]
+    
+    # store output to document
+    doc = frappe.get_doc("EN 50399", doc_name)
+    doc.logger_data = lines
+    doc.save()
+    
+    return { 'output': 'Raw data imported' }
+    
+""" This function is used to compute the results """
+def compute():
+    pass

@@ -98,7 +98,8 @@ function read_raw_file(frm, file) {
             /* convert content to csv */
             var csv = XLSX.utils.sheet_to_csv(workbook.Sheets[first_sheet_name]);
             /* write content to form raw field */
-            cur_frm.set_value('logger_data', csv);
+            //cur_frm.set_value('logger_data', csv);
+            convert_raw_data(frm, csv);
         }
         // assign an error handler event
         reader.onerror = function (event) {
@@ -110,6 +111,21 @@ function read_raw_file(frm, file) {
     {
         frappe.msgprint(__("Please select a file."), __("Information"));
     }
+}
+
+function convert_raw_data(frm, raw) {
+    frappe.call({
+        method: 'firetesting.fire_testing.doctype.en_50399.en_50399.convert_data',
+        args: { 
+            'raw': raw,
+            'doc_name': frm.doc.name
+        },
+        callback: function(r) {
+            if (r.message) {
+                reload_dialog(__("Import completed"), __(r.message.output));
+            }
+        }
+    });
 }
 
 function import_transfer_file(frm) {
@@ -134,6 +150,25 @@ function import_transfer_file(frm) {
     d.show();
 }
 
+function reload_dialog(title, message) {
+    var d = new frappe.ui.Dialog({
+    	'title': title,
+    	'fields': [
+            {'fieldname': 'ht', 'fieldtype': 'HTML'}
+        ],
+        primary_action: function() {
+            // hide form
+            d.hide();
+            // reload form
+            location.reload();
+        }
+    });
+    
+    d.fields_dict.ht.$wrapper.html('<p>' + message + '</p>');
+    
+    d.show();
+}
+
 function read_import_file(frm, file) {
     // read the file 
     var content = "";
@@ -149,12 +184,12 @@ function read_import_file(frm, file) {
             frappe.call({
                 method: 'firetesting.fire_testing.doctype.en_50399.en_50399.import_transfer_file',
                 args: { 
-                    'content': content
+                    'content': content,
+                    'doc_name': frm.doc.name
                 },
                 callback: function(r) {
                     if (r.message) { 
-                        assign_imported_values(r.message.data);
-                        frappe.msgprint(r.message.output);                        
+                        reload_dialog(__("Import completed"), __(r.message.output));
                     }
                 }
             });
@@ -170,15 +205,6 @@ function read_import_file(frm, file) {
     {
         frappe.msgprint(__("Please select a file."), __("Information"));
     }
-}
-
-function assign_imported_values(data) {
-    cur_frm.set_value("date_of_test", data.date_of_test);
-    cur_frm.set_value("operator", data.operator);
-    cur_frm.set_value("logger_data", data.raw);
-    cur_frm.set_value("temperature", data.env_temperature);
-    cur_frm.set_value("pressure", data.env_pressure);
-    cur_frm.set_value("relative_humidity", data.env_humidity);            
 }
 
 function export_transfer_file(frm) {
