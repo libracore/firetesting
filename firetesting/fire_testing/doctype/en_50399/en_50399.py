@@ -201,16 +201,55 @@ def get_normed_date(date):
 @frappe.whitelist()
 def convert_data(raw, doc_name):
     raw_lines = raw.split('\n')
+    """ field definition:
+        A-0: full time
+        B-1: T3 (duct) [°C]
+        C-2: Flow Cavi 
+        D-3: Fumi Cavi
+        E-4: T1 (duct) [°C]
+        F-5: T2 (duct) [°C]
+        G-6: O2 [%]
+        H-7: CO2 [%]
+        I-8: CO [%]
+        J-9: Gas
+        K-10: Gas
+        L-11: Burner output
+        M-12: T (duct) [°C]
+        N-13: Flow duct
+        O-14: RHR calib
+        P-15: RHR test
+        Q-16: CO ppm
+        R-17: Smoke [%]
+    """
     # find start point: where burner output > 15 kW
     for i in range(1, len(raw_lines) - 1):
         fields = raw_lines[i].split(',')
-        if fields[11] > 15:
+        if float(fields[11]) > 15:
             start_line_index = i
             break
     
-    lines = "time (s),Gas MFM (mg/s),DPT (Pa),Transmission (%),O2 (%),CO2 (%),Amb T (K),T_Duct1 (K),T_Duct2 (K),T_Duct3 (K),CO (%),APT (kPa),Air MFM (mg/s),PDM (-),PDC (-)"
+    # compile the data vectors
+    lines = "time (s),Gas MFM (mg/s),DPT (Pa),Transmission (%),O2 (%),CO2 (%),Amb T (K),T_Duct1 (K),T_Duct2 (K),T_Duct3 (K),CO (%),APT (kPa),Air MFM (mg/s),PDM (-),PDC (-)\n"
     lines = lines + "\n"
-    lines = lines + raw_lines[start_line_index]
+    for i in range(0, (1200/3) + 1):
+        fields = raw_lines[start_line_index + i].split(',')
+        lines = lines + "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}\n".format(
+            3 * i,                                              # 0 - time [sec]
+            -1,                                                 # 1 - Gas MFM [mg/s]
+            -1,                                                 # 2 - DPT (deltaP) [Pa]
+            fields[17],                                         # 3 - Transmission [%]
+            fields[6],                                          # 4 - O2 [%]
+            fields[7],                                          # 5 - CO2 [%]
+            -1,                                                 # 6 - T (ambient) [K]
+            fields[4],                                          # 7 - T (duct, 1) [K]
+            fields[5],                                          # 8 - T (duct, 2) [K]
+            fields[1],                                          # 9 - T (duct, 3) [K]
+            (float(fields[16]) / 1000),                         # 10- CO [%]                                                                                                
+            -1,                                                 # 11- P (ambient) [kPa]
+            -1,                                                 # 12- Air MFM [mg/s]
+            -1,                                                 # 13- PDM
+            -1,                                                 # 14- PDC                                                
+            )
     
     # store output to document
     doc = frappe.get_doc("EN 50399", doc_name)
