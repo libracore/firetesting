@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
+from math import exp
 
 class EN50399(Document):
     def onload(self):
@@ -197,9 +198,12 @@ def get_normed_date(date):
 """ This function is used to import and normalise data from the data logger 
     raw: string with the data
     doc_name: name of this document record
+    env_T: environmental temperature, in °C
+    env_P: environmental pressure, in Pa
+    env_rh: environmental relative humidity, in %
 """
 @frappe.whitelist()
-def convert_data(raw, doc_name):
+def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
     raw_lines = raw.split('\n')
     """ field definition:
         A-0: full time
@@ -240,24 +244,33 @@ def convert_data(raw, doc_name):
             fields[17],                                         # 3 - Transmission [%]
             fields[6],                                          # 4 - O2 [%]
             fields[7],                                          # 5 - CO2 [%]
-            -1,                                                 # 6 - T (ambient) [K]
-            fields[4],                                          # 7 - T (duct, 1) [K]
-            fields[5],                                          # 8 - T (duct, 2) [K]
-            fields[1],                                          # 9 - T (duct, 3) [K]
+            kelvin(float(env_T)),                               # 6 - T (ambient) [K]
+            kelvin(float(fields[4])),                           # 7 - T (duct, 1) [K]
+            kelvin(float(fields[5])),                           # 8 - T (duct, 2) [K]
+            kelvin(float(fields[1])),                           # 9 - T (duct, 3) [K]
             (float(fields[16]) / 1000),                         # 10- CO [%]                                                                                                
-            -1,                                                 # 11- P (ambient) [kPa]
+            (float(env_P) / 1000),                              # 11- P (ambient) [kPa]
             -1,                                                 # 12- Air MFM [mg/s]
             -1,                                                 # 13- PDM
             -1,                                                 # 14- PDC                                                
             )
     
+    # compute results 
+    trace = ""
+    x_a_H2O = (float(env_rh) / 100) * (1 / float(env_P)) * (exp(23.2) / exp(3816/(kelvin(float(env_T))-46)))
+    trace = trace + "x_a_H2O: {0}".format(x_a_H2O)
+    
     # store output to document
     doc = frappe.get_doc("EN 50399", doc_name)
     doc.logger_data = lines
+    doc.calculation_trace = trace
     doc.save()
     
     return { 'output': 'Raw data imported' }
-    
+
+def kelvin(temp):
+    return temp + 273.15
+        
 """ This function is used to compute the results """
 def compute():
     pass
