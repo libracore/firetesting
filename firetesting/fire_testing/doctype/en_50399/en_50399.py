@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
-from math import exp
+import math
 
 class EN50399(Document):
     def onload(self):
@@ -204,6 +204,10 @@ def get_normed_date(date):
 """
 @frappe.whitelist()
 def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
+    # get parent document
+    doc = frappe.get_doc("EN 50399", doc_name)
+    
+    # prepare input data
     raw_lines = raw.split('\n')
     """ field definition:
         A-0: full time
@@ -217,7 +221,7 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
         I-8: CO [%]
         J-9: Gas
         K-10: Gas
-        L-11: Burner output
+        L-11: Burner output (Q) [kW]
         M-12: T (duct) [°C]
         N-13: Flow duct
         O-14: RHR calib
@@ -254,23 +258,57 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
             -1,                                                 # 13- PDM
             -1,                                                 # 14- PDC                                                
             )
+        
+    # store output to document
+    doc.logger_data = lines
+    doc.save()
+    
+    # compute results
+    output = calculate_results(doc_name)
+    
+    return output
+
+""" This function will recalculate the results """
+@frappe.whitelist()
+def calculate_results(doc_name):
+    # get parent document
+    doc = frappe.get_doc("EN 50399", doc_name)
+    
+    # prepare data 
+    lines = doc.logger_data.split('\n')
     
     # compute results 
     trace = ""
-    x_a_H2O = (float(env_rh) / 100) * (1 / float(env_P)) * (exp(23.2) / exp(3816/(kelvin(float(env_T))-46)))
-    trace = trace + "x_a_H2O: {0}".format(x_a_H2O)
+    # fraction of H2O
+    env_rh = doc.relative_humidity
+    env_P = doc.pressure
+    env_T = doc.temperature
+    if env_P == 0:
+        env_P = 96000
+    x_a_H2O = (float(env_rh) / 100) * (1 / float(env_P)) * (math.exp(23.2) / math.exp(3816/(kelvin(float(env_T))-46)))
+    trace = trace + "x_a_H2O: {0}\n".format(x_a_H2O)
+    # read constants
+    if not doc.test_apparatus:
+        return { 'output': 'Test apparatus not set' }
+    apparatus = frappe.get_doc("Test Apparatus", doc.test_apparatus)
+    kt = apparatus.en50399_kt
+    kp = apparatus.en50399_kp
+    d = apparatus.en50399_d
+    A = math.pi * math.pow((d/2), 2)
+    trace = trace + "kt: {0}, kp: {1}, A: {2} m2\n".format(kt, kp, A)
+    
     
     # store output to document
-    doc = frappe.get_doc("EN 50399", doc_name)
-    doc.logger_data = lines
     doc.calculation_trace = trace
+    doc.kt = kt
+    doc.kp = kp
+    doc.a = A
+    doc.trace = trace
     doc.save()
     
-    return { 'output': 'Raw data imported' }
-
+    return { 'output': 'Raw data imported and calulcated' }
+    
 def kelvin(temp):
     return temp + 273.15
         
-""" This function is used to compute the results """
-def compute():
-    pass
+

@@ -16,6 +16,9 @@ frappe.ui.form.on('EN 50399', {
         frm.add_custom_button(__("Load raw data"), function() {
             read_raw_data(frm);
         });
+        frm.add_custom_button(__("Re-calculate"), function() {
+            recalculate(frm);
+        });
 	},
     setup: function(frm) { 
 		// create title based on crono
@@ -123,6 +126,20 @@ function convert_raw_data(frm, raw) {
         callback: function(r) {
             if (r.message) {
                 reload_dialog(__("Import completed"), __(r.message.output));
+            }
+        }
+    });
+}
+
+function recalculate(frm) {
+    frappe.call({
+        method: 'firetesting.fire_testing.doctype.en_50399.en_50399.calculate_results',
+        args: { 
+            'doc_name': frm.doc.name
+        },
+        callback: function(r) {
+            if (r.message) {
+                reload_dialog(__("Re-calculation completed"), __(r.message.output));
             }
         }
     });
