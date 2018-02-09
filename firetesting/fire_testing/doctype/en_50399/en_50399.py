@@ -296,8 +296,48 @@ def calculate_results(doc_name):
     d = apparatus.en50399_d
     A = math.pi * math.pow((d/2), 2)
     trace = trace + "kt: {0}, kp: {1}, A: {2} m2\n".format(kt, kp, A)
-    
-    
+    initial_data_fields = lines[2].split(',')
+    x_0_O2 = float(initial_data_fields[4])
+    x_a_O2 = x_0_O2 * (1 - x_a_H2O)
+    x_0_CO2 = float(initial_data_fields[5])
+    q_burner = float(doc.burner_output)             # in kW
+    E_1 = 17200                                     # in kJ/m3
+    E_C3H8 = 16800                                  # in kJ/m3
+    alpha = 1.105                                   # expansion factor
+    # build up vectors and compute volume flow
+    t = []                                          # time vector
+    dp = []                                         # delta pressure [Pa]
+    V = []                                          # volume flow vector
+    t_gas = []                                      # exhaust gas temperature [K] (T duct 2)
+    transmission = []                               # transmission [%]
+    oxy_depletion = []                              # oxygen depletion factor [-]
+    q = []                                          # heat release [kW]
+    for i in range(2, len(lines)):
+        fields = lines[i].split(',')
+        if len(fields) > 1:
+            t.append(int(fields[0]))
+            dp.append(float(fields[2]))
+            t_gas.append(float(fields[8]))
+            transmission.append(float(fields[3]))
+            diff = dp[-1] / t_gas[-1]
+            if diff < 0:
+                diff = 0
+            _v = 22.4 * (A * kt / kp) * math.sqrt(diff)
+            V.append(_v)
+            x_CO2 = float(fields[5])
+            x_O2 = float(fields[4])
+            _oxy_dep = (x_0_O2 * (1 - x_CO2) - x_O2 * (1 - x_0_CO2)) / (x_0_O2 * (1 - x_O2 - x_CO2))
+            oxy_depletion.append(_oxy_dep)
+            _q = E_1 * _v * x_a_O2 * (_oxy_dep / (_oxy_dep * (alpha - 1) + 1)) - (E_1 / E_C3H8) * q_burner
+            q.append(_q)
+            
+    trace = trace + "t: {0}\n".format(t)
+    trace = trace + "dp: {0}\n".format(dp)
+    trace = trace + "trsm: {0}\n".format(transmission)
+    trace = trace + "V: {0}\n".format(V)
+    trace = trace + "oxy_dep: {0}\n".format(oxy_depletion)
+    trace = trace + "q: {0}\n".format(q)
+                
     # store output to document
     doc.calculation_trace = trace
     doc.kt = kt
