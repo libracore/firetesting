@@ -295,6 +295,7 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
     # store output to document
     doc.logger_data = lines
     doc.i0 = i0
+    doc.raw_data_cutoff = start_line_index
     doc.save()
     
     # compute results
@@ -311,8 +312,8 @@ def calculate_results(doc_name):
     # prepare data 
     lines = doc.logger_data.split('\n')
     column_config = { 'time': 0,
-        'dpt': 1,
-        'gas_mfm': 2,
+        'gas_mfm': 1,
+        'dpt': 2,
         'transmission': 3,
         'o2': 4,
         'co2': 5,
@@ -347,9 +348,11 @@ def calculate_results(doc_name):
     A = math.pi * math.pow((d/2), 2)
     trace = trace + "kt: {0}, kp: {1}, A: {2} m2\n".format(kt, kp, A)
     initial_data_fields = lines[2].split(',')
-    x_0_O2 = float(initial_data_fields[column_config['o2']])
+    x_0_O2 = (float(initial_data_fields[column_config['o2']]) / 100)
     x_a_O2 = x_0_O2 * (1 - x_a_H2O)
-    x_0_CO2 = float(initial_data_fields[column_config['co2']])
+    x_0_CO2 = (float(initial_data_fields[column_config['co2']]) / 100)
+    trace = trace + "x_0_O2: {0}, x_a_O2: {1}, x_0_CO2: {2}\n".format(
+        x_0_O2, x_a_O2, x_0_CO2)
     q_burner = float(doc.burner_output)             # in kW
     E_1 = 17200                                     # in kJ/m3
     E_C3H8 = 16800                                  # in kJ/m3
@@ -366,7 +369,7 @@ def calculate_results(doc_name):
     oxy_depletion = []                              # oxygen depletion factor [-]
     q = []                                          # heat release [kW]
     thr = []                                        # total heat release [MJ]
-    peak_hhr = 0.0                                  # peak heat release [kW]
+    peak_hrr = 0.0                                  # peak heat release [kW]
     peak_hrr_time = 0                               # time of hrr peak [s]
     k = []											# smoke production extinction coefficient
     spr = []                                        # smoke production
@@ -380,7 +383,8 @@ def calculate_results(doc_name):
             time.append(_time)
             _dp = float(fields[column_config['dpt']])
             dp.append(_dp)
-            _t_gas = float(fields[column_config['t_duct_2']])
+            _t_gas = (float(fields[column_config['t_duct_2']]) + 
+                float(fields[column_config['t_duct_2']])) / 2.0
             t_gas.append(_t_gas)
             # transmission
             _transmission = float(fields[column_config['transmission']])
@@ -394,8 +398,8 @@ def calculate_results(doc_name):
             # volume flow
             _v = 22.4 * (A * kt / kp) * math.sqrt(_diff)
             V.append(_v)
-            x_CO2 = float(fields[column_config['co2']])
-            x_O2 = float(fields[column_config['o2']])
+            x_CO2 = (float(fields[column_config['co2']])) / 100
+            x_O2 = (float(fields[column_config['o2']])) / 100
             _oxy_dep = (x_0_O2 * (1 - x_CO2) - x_O2 * (1 - x_0_CO2)) / (x_0_O2 * (1 - x_O2 - x_CO2))
             oxy_depletion.append(_oxy_dep)
             # heat release
@@ -404,11 +408,11 @@ def calculate_results(doc_name):
                 _q = 0                  # prevent negative heat values
             q.append(_q)
             if len(thr) == 0:            # define current THR
-                _thr = 3 * _q
+                _thr = (3 * _q) / 1000
             else:
-                _thr = thr[-1] + 3 * _q
+                _thr = thr[-1] + (3 * _q / 1000)
             thr.append(_thr)
-            if _q > peak_hhr:
+            if _q > peak_hrr:
                 peak_hrr = _q           # update peak_hrr
                 peak_hrr_time = _time
             # smoke production
@@ -461,6 +465,12 @@ def calculate_results(doc_name):
     tsp_data_str = tsp_data_str[:-1]
 
     # store output to document
+    # result section
+    doc.peak_hrr = peak_hrr
+    doc.peak_spr = peak_spr
+    doc.thr_1200s = thr[-1]
+    doc.tsp_1200s = tsp[-1]
+    # trace and processing
     doc.calculation_trace = trace
     doc.kt = kt
     doc.kp = kp
@@ -474,6 +484,13 @@ def calculate_results(doc_name):
     doc.data_thr = thr_data_str
     doc.data_spr = spr_data_str
     doc.data_tsp = tsp_data_str
+    doc.hrr_max = peak_hrr
+    doc.hrr_max_time = peak_hrr_time
+    doc.transmittance_min = min_transmission
+    doc.transmittance_min_time = min_transmission_time
+    doc.spr_max = peak_spr
+    doc.spr_max_time = peak_spr_time
+    
     doc.save()
     
     return { 'output': 'Raw data imported and calulcated' }
