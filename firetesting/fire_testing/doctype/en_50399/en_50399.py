@@ -209,30 +209,57 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
     
     # prepare input data
     raw_lines = raw.split('\n')
-    """ field definition: (V1)
-        A-0: full time
-        B-1: T3 (duct) [°C]
-        C-2: Flow Cavi 
-        D-3: Fumi Cavi
-        E-4: T1 (duct) [°C]
-        F-5: T2 (duct) [°C]
-        G-6: O2 [%]
-        H-7: CO2 [%]
-        I-8: CO [%]
-        J-9: Gas
-        K-10: Gas
-        L-11: Burner output (Q) [kW]
-        M-12: T (duct) [°C]
-        N-13: Flow duct
-        O-14: RHR calib
-        P-15: RHR test
-        Q-16: CO ppm
-        R-17: Smoke [%]
-    """
+    """ field definition: (V1)          (V2)
+        A-0: full time					full time
+        B-1: T3 (duct) [°C]				0.0 - TAMB_50399
+        C-2: Flow Cavi 					0.1 - Tduct1_50399 {T duct 1}
+        D-3: Fumi Cavi					0.2 - Tduct3_50399 {T duct 2}
+        E-4: T1 (duct) [°C]				0.5 - Flow_50399 {DPT}
+        F-5: T2 (duct) [°C]				0.6 - SMOKE_50399 {transmission}
+        G-6: O2 [%]						0.7 - AirIN_50399
+        H-7: CO2 [%]					0.8 - T_IN_50399
+        I-8: CO [%]						1.0 - Gas O2 {O2}
+        J-9: Gas						1.1 - Gas CO2 {CO2}
+        K-10: Gas						1.2 - Gas CO {CO}
+        L-11: Burner output (Q) [kW]	1.4 - Gas used
+        M-12: T (duct) [°C]				80.1 - Gas_Burner_50399 {gad mfm}
+        N-13: Flow duct					80.2 - Qburner_50399 {Q burner}
+        O-14: RHR calib					80.3 - Tduct_50399
+        P-15: RHR test					80.4 - FlowDuct_50399
+        Q-16: CO ppm					80.10 - RHR_Cal_50399
+        R-17: Smoke [%]					80.11 - RHR_Test_50399
+		S-18:							80.12 - CO_net_50399
+		T-19:							80.13 - Epthane_RHR_50399
+		U-20:							80.14 - Meth_RHR_50399
+		V-21:							80.15 - Flow_IN_50399
+		W-22:							80.16 - air_IN_50399
+		X-23:
+		Y-24:
+		Z-25:
+		
+    """ 	
+	# configuration of columns of raw file
+	column_config = { 
+		'burner_output': 13, 
+		'gas_mfm': 12, 
+		'dpt': 4,
+		'transmission': 5,
+		'o2': 8,
+		'co2': 9,
+		'amb_t': -1,
+		't_duct_1': 2,
+		't_duct_2': 3,
+		't_duct_3': -1,
+		'co': 10,
+		'apt': -1,
+		'air_mfm': -1,
+		'pdm': -1,
+		'pdc': -1
+	}
     # find start point: where burner output > 15 kW
     for i in range(1, len(raw_lines) - 1):
         fields = raw_lines[i].split(',')
-        if float(fields[11]) > 15:
+        if float(fields[column_config.burner_output]) > 15:
             start_line_index = i
             break
     
@@ -243,16 +270,16 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
         fields = raw_lines[start_line_index + i].split(',')
         lines = lines + "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}\n".format(
             3 * i,                                              # 0 - time [sec]
-            -1,                                                 # 1 - Gas MFM [mg/s]
-            -1,                                                 # 2 - DPT (deltaP) [Pa]
-            fields[17],                                         # 3 - Transmission [%]
-            fields[6],                                          # 4 - O2 [%]
-            fields[7],                                          # 5 - CO2 [%]
+            fields[column_config.gas_mfm],                      # 1 - Gas MFM [mg/s]
+            fields[column_config.dpt],                          # 2 - DPT (deltaP) [Pa]
+            fields[column_config.transmission],                 # 3 - Transmission [%]
+            fields[column_config.o2],                           # 4 - O2 [%]
+            fields[column_config.co2],                          # 5 - CO2 [%]
             kelvin(float(env_T)),                               # 6 - T (ambient) [K]
-            kelvin(float(fields[4])),                           # 7 - T (duct, 1) [K]
-            kelvin(float(fields[5])),                           # 8 - T (duct, 2) [K]
-            kelvin(float(fields[1])),                           # 9 - T (duct, 3) [K]
-            (float(fields[16]) / 1000),                         # 10- CO [%]                                                                                                
+            kelvin(float(fields[column_config.t_duct_1])),      # 7 - T (duct, 1) [K]
+            kelvin(float(fields[column_config.t_duct_2])),      # 8 - T (duct, 2) [K]
+            -1,                           						# 9 - T (duct, 3) [K]
+            (float(column_config.co) / 100000),                 # 10- CO [%]                                                                                                
             (float(env_P) / 1000),                              # 11- P (ambient) [kPa]
             -1,                                                 # 12- Air MFM [mg/s]
             -1,                                                 # 13- PDM
