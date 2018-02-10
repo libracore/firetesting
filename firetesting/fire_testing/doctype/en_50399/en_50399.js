@@ -81,7 +81,9 @@ function read_raw_data(frm) {
         }
     });
     
-    d.fields_dict.ht.$wrapper.html('<input type="file" id="input_file" />');
+    d.fields_dict.ht.$wrapper.html('<p>' + __("Please select the raw data file (xlsx format).") + '</p>' +
+        '<p>' + __("The first row should contain column headers (ID,0.0 - TAMB_50399,0.1 - Tduct1_50399,...), the second column and onwards the data") + '</p>' +
+        '<input type="file" id="input_file" />');
     
     d.show();
 }

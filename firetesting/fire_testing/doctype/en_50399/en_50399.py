@@ -258,7 +258,7 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
     # find start point: where burner output > 15 kW
     for i in range(1, len(raw_lines) - 1):
         fields = raw_lines[i].split(',')
-        if float(fields[column_config.burner_output]) > 15:
+        if float(fields[column_config['burner_output']]) > 15:
             start_line_index = i
             break
     
@@ -269,16 +269,16 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
         fields = raw_lines[start_line_index + i].split(',')
         lines = lines + "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}\n".format(
             3 * i,                                              # 0 - time [sec]
-            fields[column_config.gas_mfm],                      # 1 - Gas MFM [mg/s]
-            fields[column_config.dpt],                          # 2 - DPT (deltaP) [Pa]
-            fields[column_config.transmission],                 # 3 - Transmission [%]
-            fields[column_config.o2],                           # 4 - O2 [%]
-            fields[column_config.co2],                          # 5 - CO2 [%]
+            fields[column_config['gas_mfm']],                   # 1 - Gas MFM [mg/s]
+            fields[column_config['dpt']],                       # 2 - DPT (deltaP) [Pa]
+            fields[column_config['transmission']],              # 3 - Transmission [%]
+            fields[column_config['o2']],                        # 4 - O2 [%]
+            fields[column_config['co2']],                       # 5 - CO2 [%]
             kelvin(float(env_T)),                               # 6 - T (ambient) [K]
-            kelvin(float(fields[column_config.t_duct_1])),      # 7 - T (duct, 1) [K]
-            kelvin(float(fields[column_config.t_duct_2])),      # 8 - T (duct, 2) [K]
+            kelvin(float(fields[column_config['t_duct_1']])),   # 7 - T (duct, 1) [K]
+            kelvin(float(fields[column_config['t_duct_2']])),   # 8 - T (duct, 2) [K]
             -1,                           						# 9 - T (duct, 3) [K]
-            (float(column_config.co) / 100000),                 # 10- CO [%]                                                                                                
+            (float(column_config['co']) / 100000),              # 10- CO [%]                                                                                                
             (float(env_P) / 1000),                              # 11- P (ambient) [kPa]
             -1,                                                 # 12- Air MFM [mg/s]
             -1,                                                 # 13- PDM
@@ -287,9 +287,9 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
     
     # determine transmission baseline in first 60 seconds (20 readings)
     i0 = 0.0
-    for i in range(1, 20):
+    for i in range(1, 21):
         fields = raw_lines[i].split(',')
-        i0 = i0 + fields[column_config.transmission]
+        i0 = i0 + float(fields[column_config['transmission']])
     i0 = i0 / 20
     
     # store output to document
@@ -347,58 +347,118 @@ def calculate_results(doc_name):
     A = math.pi * math.pow((d/2), 2)
     trace = trace + "kt: {0}, kp: {1}, A: {2} m2\n".format(kt, kp, A)
     initial_data_fields = lines[2].split(',')
-    x_0_O2 = float(initial_data_fields[column_config.o2])
+    x_0_O2 = float(initial_data_fields[column_config['o2']])
     x_a_O2 = x_0_O2 * (1 - x_a_H2O)
-    x_0_CO2 = float(initial_data_fields[column_config.co2])
+    x_0_CO2 = float(initial_data_fields[column_config['co2']])
     q_burner = float(doc.burner_output)             # in kW
     E_1 = 17200                                     # in kJ/m3
     E_C3H8 = 16800                                  # in kJ/m3
     alpha = 1.105                                   # expansion factor
     i0 = doc.i0                                     # transmission baseline
     # build up vectors and compute volume flow
-    t = []                                          # time vector
+    time = []                                       # time vector
     dp = []                                         # delta pressure [Pa]
     V = []                                          # volume flow vector
     t_gas = []                                      # exhaust gas temperature [K] (T duct 2)
     transmission = []                               # transmission [%]
+    min_transmission = 100                          # minimal transmission
+    min_transmission_time = 0                       # time of minimal transmission
     oxy_depletion = []                              # oxygen depletion factor [-]
     q = []                                          # heat release [kW]
+    thr = []                                        # total heat release [MJ]
+    peak_hhr = 0.0                                  # peak heat release [kW]
+    peak_hrr_time = 0                               # time of hrr peak [s]
     k = []											# smoke production extinction coefficient
     spr = []                                        # smoke production
+    tsp = []                                        # total smoke production [m2]
+    peak_spr = 0.0                                  # peak smoke production [m2/s]
+    peak_spr_time = 0                               # time of smoke production peak
     for i in range(2, len(lines)):
         fields = lines[i].split(',')
         if len(fields) > 1:
-            t.append(int(fields[column_config.time]))
-            dp.append(float(fields[column_config.dpt]))
-            t_gas.append(float(fields[column_config.t_duct_2]))
-            transmission.append(float(fields[column_config.transmission]))
-            diff = dp[-1] / t_gas[-1]
-            if diff < 0:
-                diff = 0
+            _time = int(fields[column_config['time']])
+            time.append(_time)
+            _dp = float(fields[column_config['dpt']])
+            dp.append(_dp)
+            _t_gas = float(fields[column_config['t_duct_2']])
+            t_gas.append(_t_gas)
+            # transmission
+            _transmission = float(fields[column_config['transmission']])
+            if _transmission < min_transmission:
+                min_transmission = _transmission
+                min_transmission_time = _time
+            transmission.append(_transmission)
+            _diff = _dp / _t_gas
+            if _diff < 0:
+                _diff = 0
             # volume flow
-            _v = 22.4 * (A * kt / kp) * math.sqrt(diff)
+            _v = 22.4 * (A * kt / kp) * math.sqrt(_diff)
             V.append(_v)
-            x_CO2 = float(fields[column_config.co2])
-            x_O2 = float(fields[column_config.o2])
+            x_CO2 = float(fields[column_config['co2']])
+            x_O2 = float(fields[column_config['o2']])
             _oxy_dep = (x_0_O2 * (1 - x_CO2) - x_O2 * (1 - x_0_CO2)) / (x_0_O2 * (1 - x_O2 - x_CO2))
             oxy_depletion.append(_oxy_dep)
             # heat release
             _q = E_1 * _v * x_a_O2 * (_oxy_dep / (_oxy_dep * (alpha - 1) + 1)) - (E_1 / E_C3H8) * q_burner
+            if _q < 0:
+                _q = 0                  # prevent negative heat values
             q.append(_q)
+            if len(thr) == 0:            # define current THR
+                _thr = 3 * _q
+            else:
+                _thr = thr[-1] + 3 * _q
+            thr.append(_thr)
+            if _q > peak_hhr:
+                peak_hrr = _q           # update peak_hrr
+                peak_hrr_time = _time
             # smoke production
-            _k = (1 / d) * math.log(i0 / fields[column_config.transmission])
+            _k = (1 / d) * math.log(i0 / _transmission)
             k.append(_k)
             _spr = _k * _v
+            if _spr < 0:
+                _spr = 0                # prevent negative smoke production
             spr.append(_spr)
+            if len(tsp) == 0:           # define current TSP
+                _tsp = 3 * _spr
+            else:
+                _tsp = tsp[-1] + 3 * _spr
+            tsp.append(_tsp)
+            if _spr > peak_spr:
+                peak_spr = _spr
+                peak_spr_time = _time
 
-    trace = trace + "t: {0}\n".format(t)
+    trace = trace + "time: {0}\n".format(time)
     trace = trace + "dp: {0}\n".format(dp)
     trace = trace + "trsm: {0}\n".format(transmission)
     trace = trace + "V: {0}\n".format(V)
     trace = trace + "oxy_dep: {0}\n".format(oxy_depletion)
-    trace = trace + "q: {0}\n".format(q)
+    trace = trace + "q (=hrr): {0}\n".format(q)
     trace = trace + "k: {0}\n".format(k)
     trace = trace + "spr: {0}\n".format(spr)
+    trace = trace + "Peak HRR: {0} ({4} sec), THR: {1}, Peak SPR: {2} ({5} sec), TSP: {3}\n".format(
+        peak_hrr, thr[-1], peak_spr, tsp[-1], peak_hrr_time, peak_spr_time)
+
+    # process data for charts
+    time_data_str = ""
+    transmission_data_str = ""
+    hrr_data_str = ""
+    thr_data_str = ""
+    spr_data_str = ""
+    tsp_data_str = ""
+    for i in range(0, len(time)):
+        time_data_str = time_data_str + "{0},".format(time[i])
+        transmission_data_str = transmission_data_str + "{0:.3f},".format(transmission[i])
+        hrr_data_str = hrr_data_str + "{0:.3f},".format(q[i])
+        thr_data_str = thr_data_str + "{0:.3f},".format(thr[i])
+        spr_data_str = spr_data_str + "{0:.3f},".format(spr[i])
+        tsp_data_str = tsp_data_str + "{0:.3f},".format(tsp[i])
+
+    time_data_str = time_data_str[:-1]          # remove trailing comma
+    transmission_data_str = transmission_data_str[:-1]
+    hrr_data_str = hrr_data_str[:-1]
+    thr_data_str = thr_data_str[:-1]
+    spr_data_str = spr_data_str[:-1]
+    tsp_data_str = tsp_data_str[:-1]
 
     # store output to document
     doc.calculation_trace = trace
@@ -408,6 +468,12 @@ def calculate_results(doc_name):
     doc.radius_of_tube = d / 2
     doc.e1 = E_1
     doc.trace = trace
+    doc.data_time = time_data_str
+    doc.data_transmission = transmission_data_str
+    doc.data_hrr = hrr_data_str
+    doc.data_thr = thr_data_str
+    doc.data_spr = spr_data_str
+    doc.data_tsp = tsp_data_str
     doc.save()
     
     return { 'output': 'Raw data imported and calulcated' }
