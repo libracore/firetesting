@@ -294,6 +294,7 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
     
     # store output to document
     doc.logger_data = lines
+    doc.i0 = i0
     doc.save()
     
     # compute results
@@ -309,7 +310,23 @@ def calculate_results(doc_name):
     
     # prepare data 
     lines = doc.logger_data.split('\n')
-    
+    column_config = { 'time': 0,
+        'dpt': 1,
+        'gas_mfm': 2,
+        'transmission': 3,
+        'o2': 4,
+        'co2': 5,
+        't_amb': 6,
+        't_duct_1': 7,
+        't_duct_2': 8,
+        't_duct_3': 9,
+        'co': 10,
+        'p_amb': 11,
+        'air_mfm': 12,
+        'pdm': 13,
+        'pdc': 14
+    }
+
     # compute results 
     trace = ""
     # fraction of H2O
@@ -330,13 +347,14 @@ def calculate_results(doc_name):
     A = math.pi * math.pow((d/2), 2)
     trace = trace + "kt: {0}, kp: {1}, A: {2} m2\n".format(kt, kp, A)
     initial_data_fields = lines[2].split(',')
-    x_0_O2 = float(initial_data_fields[4])
+    x_0_O2 = float(initial_data_fields[column_config.o2])
     x_a_O2 = x_0_O2 * (1 - x_a_H2O)
-    x_0_CO2 = float(initial_data_fields[5])
+    x_0_CO2 = float(initial_data_fields[column_config.co2])
     q_burner = float(doc.burner_output)             # in kW
     E_1 = 17200                                     # in kJ/m3
     E_C3H8 = 16800                                  # in kJ/m3
     alpha = 1.105                                   # expansion factor
+    i0 = doc.i0                                     # transmission baseline
     # build up vectors and compute volume flow
     t = []                                          # time vector
     dp = []                                         # delta pressure [Pa]
@@ -346,40 +364,49 @@ def calculate_results(doc_name):
     oxy_depletion = []                              # oxygen depletion factor [-]
     q = []                                          # heat release [kW]
     k = []											# smoke production extinction coefficient
+    spr = []                                        # smoke production
     for i in range(2, len(lines)):
         fields = lines[i].split(',')
         if len(fields) > 1:
-            t.append(int(fields[0]))
-            dp.append(float(fields[2]))
-            t_gas.append(float(fields[8]))
-            transmission.append(float(fields[3]))
+            t.append(int(fields[column_config.time]))
+            dp.append(float(fields[column_config.dpt]))
+            t_gas.append(float(fields[column_config.t_duct_2]))
+            transmission.append(float(fields[column_config.transmission]))
             diff = dp[-1] / t_gas[-1]
             if diff < 0:
                 diff = 0
             # volume flow
             _v = 22.4 * (A * kt / kp) * math.sqrt(diff)
             V.append(_v)
-            x_CO2 = float(fields[5])
-            x_O2 = float(fields[4])
+            x_CO2 = float(fields[column_config.co2])
+            x_O2 = float(fields[column_config.o2])
             _oxy_dep = (x_0_O2 * (1 - x_CO2) - x_O2 * (1 - x_0_CO2)) / (x_0_O2 * (1 - x_O2 - x_CO2))
             oxy_depletion.append(_oxy_dep)
             # heat release
             _q = E_1 * _v * x_a_O2 * (_oxy_dep / (_oxy_dep * (alpha - 1) + 1)) - (E_1 / E_C3H8) * q_burner
             q.append(_q)
             # smoke production
-            _k = (1 / d) * math.log()
+            _k = (1 / d) * math.log(i0 / fields[column_config.transmission])
+            k.append(_k)
+            _spr = _k * _v
+            spr.append(_spr)
+
     trace = trace + "t: {0}\n".format(t)
     trace = trace + "dp: {0}\n".format(dp)
     trace = trace + "trsm: {0}\n".format(transmission)
     trace = trace + "V: {0}\n".format(V)
     trace = trace + "oxy_dep: {0}\n".format(oxy_depletion)
     trace = trace + "q: {0}\n".format(q)
-                
+    trace = trace + "k: {0}\n".format(k)
+    trace = trace + "spr: {0}\n".format(spr)
+
     # store output to document
     doc.calculation_trace = trace
     doc.kt = kt
     doc.kp = kp
     doc.a = A
+    doc.radius_of_tube = d / 2
+    doc.e1 = E_1
     doc.trace = trace
     doc.save()
     
