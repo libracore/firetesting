@@ -228,34 +228,33 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
         P-15: RHR test					80.4 - FlowDuct_50399
         Q-16: CO ppm					80.10 - RHR_Cal_50399
         R-17: Smoke [%]					80.11 - RHR_Test_50399
-		S-18:							80.12 - CO_net_50399
-		T-19:							80.13 - Epthane_RHR_50399
-		U-20:							80.14 - Meth_RHR_50399
-		V-21:							80.15 - Flow_IN_50399
-		W-22:							80.16 - air_IN_50399
-		X-23:
-		Y-24:
-		Z-25:
-		
+        S-18:							80.12 - CO_net_50399
+        T-19:							80.13 - Epthane_RHR_50399
+        U-20:							80.14 - Meth_RHR_50399
+        V-21:							80.15 - Flow_IN_50399
+        W-22:							80.16 - air_IN_50399
+        X-23:
+        Y-24:
+        Z-25:
     """ 	
-	# configuration of columns of raw file
-	column_config = { 
-		'burner_output': 13, 
-		'gas_mfm': 12, 
-		'dpt': 4,
-		'transmission': 5,
-		'o2': 8,
-		'co2': 9,
-		'amb_t': -1,
-		't_duct_1': 2,
-		't_duct_2': 3,
-		't_duct_3': -1,
-		'co': 10,
-		'apt': -1,
-		'air_mfm': -1,
-		'pdm': -1,
-		'pdc': -1
-	}
+    # configuration of columns of raw file
+    column_config = { 
+        'burner_output': 13, 
+        'gas_mfm': 12, 
+        'dpt': 4,
+        'transmission': 5,
+        'o2': 8,
+        'co2': 9,
+        'amb_t': -1,
+        't_duct_1': 2,
+        't_duct_2': 3,
+        't_duct_3': -1,
+        'co': 10,
+        'apt': -1,
+        'air_mfm': -1,
+        'pdm': -1,
+        'pdc': -1
+    }
     # find start point: where burner output > 15 kW
     for i in range(1, len(raw_lines) - 1):
         fields = raw_lines[i].split(',')
@@ -285,7 +284,14 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
             -1,                                                 # 13- PDM
             -1,                                                 # 14- PDC                                                
             )
-        
+    
+    # determine transmission baseline in first 60 seconds (20 readings)
+    i0 = 0.0
+    for i in range(1, 20):
+        fields = raw_lines[i].split(',')
+        i0 = i0 + fields[column_config.transmission]
+    i0 = i0 / 20
+    
     # store output to document
     doc.logger_data = lines
     doc.save()
@@ -339,6 +345,7 @@ def calculate_results(doc_name):
     transmission = []                               # transmission [%]
     oxy_depletion = []                              # oxygen depletion factor [-]
     q = []                                          # heat release [kW]
+    k = []											# smoke production extinction coefficient
     for i in range(2, len(lines)):
         fields = lines[i].split(',')
         if len(fields) > 1:
@@ -359,7 +366,8 @@ def calculate_results(doc_name):
             # heat release
             _q = E_1 * _v * x_a_O2 * (_oxy_dep / (_oxy_dep * (alpha - 1) + 1)) - (E_1 / E_C3H8) * q_burner
             q.append(_q)
-            
+            # smoke production
+            _k = (1 / d) * math.log()
     trace = trace + "t: {0}\n".format(t)
     trace = trace + "dp: {0}\n".format(dp)
     trace = trace + "trsm: {0}\n".format(transmission)
