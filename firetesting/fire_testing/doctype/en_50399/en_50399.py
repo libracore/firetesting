@@ -209,7 +209,7 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
     
     # prepare input data
     raw_lines = raw.split('\n')
-    """ field definition:
+    """ field definition: (V1)
         A-0: full time
         B-1: T3 (duct) [°C]
         C-2: Flow Cavi 
@@ -322,12 +322,14 @@ def calculate_results(doc_name):
             diff = dp[-1] / t_gas[-1]
             if diff < 0:
                 diff = 0
+            # volume flow
             _v = 22.4 * (A * kt / kp) * math.sqrt(diff)
             V.append(_v)
             x_CO2 = float(fields[5])
             x_O2 = float(fields[4])
             _oxy_dep = (x_0_O2 * (1 - x_CO2) - x_O2 * (1 - x_0_CO2)) / (x_0_O2 * (1 - x_O2 - x_CO2))
             oxy_depletion.append(_oxy_dep)
+            # heat release
             _q = E_1 * _v * x_a_O2 * (_oxy_dep / (_oxy_dep * (alpha - 1) + 1)) - (E_1 / E_C3H8) * q_burner
             q.append(_q)
             
@@ -350,5 +352,3 @@ def calculate_results(doc_name):
     
 def kelvin(temp):
     return temp + 273.15
-        
-
