@@ -24,7 +24,12 @@ frappe.ui.form.on('EN 50399', {
 		// create title based on crono
 		if (frm.doc.crono != null) {
             // define test name / title
-			var title = "LSF-" + frm.doc.crono + "-10";
+            var crono_number = frm.doc.crono.split("-");
+            if (crono_number.length > 1) {
+                var title = "LSF-" + crono_number[1] + "-10";
+            } else {
+                var title = "LSF-" + frm.doc.crono + "-10";
+            }
 			//frappe.msgprint(title);
 			cur_frm.set_value("title", title);
             // get customer (from cache)
@@ -39,8 +44,62 @@ frappe.ui.form.on('EN 50399', {
 				indicator: 'red'
 			});
 		}
-	}
+	},
+    onload: function(frm) {
+        loadCharts(frm);
+    }
 });
+
+function loadCharts(frm) {
+    /* heat release  */
+    displayChart('chartHRR', 
+        'https://data.libracore.ch/server-side-charts/api/scientific_chart.php' +
+        '?x[0]=' + frm.doc.data_time +
+        '&y[0]=' + frm.doc.data_hrr + 
+        '&legend=' + frm.doc.title +
+        '&title=HRR' + 
+        '&scale=0,1200,0,' + frm.doc.hrr_max);
+    displayChart('chartTHR', 
+        'https://data.libracore.ch/server-side-charts/api/scientific_chart.php' +
+        '?x[0]=' + frm.doc.data_time +
+        '&y[0]=' + frm.doc.data_thr + 
+        '&legend=' + frm.doc.title +
+        '&title=THR' + 
+        '&scale=0,1200,0,' + frm.doc.thr_1200s);  
+    /* smoke production */
+    displayChart('chartSPR', 
+        'https://data.libracore.ch/server-side-charts/api/scientific_chart.php' +
+        '?x[0]=' + frm.doc.data_time +
+        '&y[0]=' + frm.doc.data_spr + 
+        '&legend=' + frm.doc.title +
+        '&title=SPR' + 
+        '&scale=0,1200,0,' + frm.doc.spr_max); 
+    displayChart('chartTSP', 
+        'https://data.libracore.ch/server-side-charts/api/scientific_chart.php' +
+        '?x[0]=' + frm.doc.data_time +
+        '&y[0]=' + frm.doc.data_tsp + 
+        '&legend=' + frm.doc.title +
+        '&title=TSP' + 
+        '&scale=0,1200,0,' + frm.doc.tsp_1200s); 
+        
+    /* Transmittance */
+    displayChart('chartTransmittance',
+        'https://data.libracore.ch/server-side-charts/api/scientific_chart.php' +
+        '?x[0]=' + frm.doc.data_time +
+        '&y[0]=' + frm.doc.data_transmission + 
+        '&legend=' + frm.doc.title +
+        '&title=Transmittance' + 
+        '&scale=0,1200,0,100'); 
+}
+
+function displayChart(container, source) {
+    let _img = document.getElementById(container);
+    var Img = new Image;
+    Img.onload = function() {
+        _img.src = this.src;
+    }
+    Img.src = source;
+}
 
 function get_material(frm) {
     frappe.call({

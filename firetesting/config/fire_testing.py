@@ -106,6 +106,12 @@ def get_data():
 					"name": "Test Apparatus",
 					"label": _("Test Apparatus"),
 					"description": _("Test Apparatus"),
+				},
+                {
+					"type": "doctype",
+					"name": "Picture Description",
+					"label": _("Picture Description"),
+					"description": _("Picture Description"),
 				}
 			]
 		}
