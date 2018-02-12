@@ -431,6 +431,44 @@ def calculate_results(doc_name):
                 peak_spr = _spr
                 peak_spr_time = _time
 
+    # compute floating averages and FIGRA
+    hrr_av = []                                 # in kW
+    figra = []                                  # in W/s
+    figra_max = 0.0                             # in W/s
+    for i in range(0,len(time)):
+        # hrr_av from symmetrical average (see EN 50399 G.1)
+        if time[i] == 0:                        # t = 0 sec
+            _hrr_av = 0
+        elif time[i] == 3:                   # t = 3 sec
+            _hrr_av = (q[0] + q[1] + q[2]) / 3
+        elif time[i] == 6:                   # t = 6 sec
+            _hrr_av = (q[0] + q[1] + q[2] + q[3] + q[4]) / 5
+        elif time[i] == 9:                   # t = 9 sec
+            _hrr_av = (q[0] + q[1] + q[2] + q[3] + q[4] + q[5] + q[6]) / 7
+        elif time[i] == 12:                   # t = 12 sec
+            _hrr_av = (q[0] + q[1] + q[2] + q[3] + q[4] + q[5] + q[6] + q[7] + q[8]) / 9
+        elif time[i] == 1200:                        # t = 1200 sec
+            _hrr_av = q[i]
+        elif time[i] == 1197:                   # t = 1197 sec
+            _hrr_av = (q[i-1] + q[i] + q[i+1]) / 3
+        elif time[i] == 1194:                   # t = 1194 sec
+            _hrr_av = (q[i-2] + q[i-1] + q[i] + q[i+1] + q[i+2]) / 5
+        elif time[i] == 1191:                   # t = 1191 sec
+            _hrr_av = (q[i-3] + q[i-2] + q[i-1] + q[i] + q[i+1] + q[i+2] + q[i+3]) / 7
+        elif time[i] == 1188:                   # t = 1188 sec
+            _hrr_av = (q[i-4] + q[i-3] + q[i-2] + q[i-1] + q[i] + q[i+1] + q[i+2] + q[i+3] + q[i+4]) / 9
+        else:
+            _hrr_av = (0.5 * q[i-5] + q[i-4] + q[i-3] + q[i-2] + q[i-1] + q[i] + q[i+1] + q[i+2] + q[i+3] + q[i+4] + 0.5 * q[i+5]) / 10
+        hrr_av.append(_hrr_av)
+        # figra: honor critiera
+        if (_hrr_av > 3) and (thr[i] > 0.4):
+            _figra = 1000 * (_hrr_av / time[i])
+        else:
+            _figra = 0
+        figra.append(_figra)
+        if _figra > figra_max:                  # check maximal figra
+            figra_max = _figra
+
     trace = trace + "time: {0}\n".format(time)
     trace = trace + "dp: {0}\n".format(dp)
     trace = trace + "trsm: {0}\n".format(transmission)
@@ -439,6 +477,8 @@ def calculate_results(doc_name):
     trace = trace + "q (=hrr): {0}\n".format(q)
     trace = trace + "k: {0}\n".format(k)
     trace = trace + "spr: {0}\n".format(spr)
+    trace = trace + "hrr_av: {0}\n".format(hrr_av)    
+    trace = trace + "figra: {0}\n".format(figra)    
     trace = trace + "Peak HRR: {0} ({4} sec), THR: {1}, Peak SPR: {2} ({5} sec), TSP: {3}\n".format(
         peak_hrr, thr[-1], peak_spr, tsp[-1], peak_hrr_time, peak_spr_time)
 
@@ -470,6 +510,7 @@ def calculate_results(doc_name):
     doc.peak_spr = peak_spr
     doc.thr_1200s = thr[-1]
     doc.tsp_1200s = tsp[-1]
+    doc.figra = figra_max
     # trace and processing
     doc.calculation_trace = trace
     doc.kt = kt
