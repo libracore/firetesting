@@ -40,7 +40,7 @@ frappe.ui.form.on('EN 50399', {
 		else {
 			frappe.msgprint({
 				title: __("Crono app"),
-				message: __("Please create tests only from Crono dashboard"),
+				message: __("Please create tests only from the Crono dashboard"),
 				indicator: 'red'
 			});
 		}

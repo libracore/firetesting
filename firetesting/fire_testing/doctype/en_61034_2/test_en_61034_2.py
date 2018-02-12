@@ -6,5 +6,5 @@ from __future__ import unicode_literals
 import frappe
 import unittest
 
-class TestEN61034_2(unittest.TestCase):
+class TestEN610342(unittest.TestCase):
 	pass

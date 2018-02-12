@@ -15,7 +15,7 @@ def get_data():
          },
          {
             'label': _('Tests'),
-            'items': ['EN 50399', 'Test 11', 'Test 12', 'Test 13']
+            'items': ['EN 50399', 'EN 60332 1 2', 'EN 61034 2', 'EN 60754 2']
          }
       ]
    }
