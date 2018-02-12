@@ -36,19 +36,19 @@ def get_data():
 				},
 				{
 					"type": "doctype",
-					"name": "Test 11",
+					"name": "EN 60332 1 2",
 					"label": _("Test 11 - EN 60332-1-2 Flame propagation"),
 					"description": _("Test 11 - EN 60332-1-2 Flame propagation")
 				},
 				{
 					"type": "doctype",
-					"name": "Test 12",
+					"name": "EN 61034 2",
 					"label": "Test 12 - EN 61034-2 Smoke density",
 					"description": _("Test 12 - EN 61034-2 Smoke density")
 				},
 				{
 					"type": "doctype",
-					"name": "Test 13",
+					"name": "EN 60754 2",
 					"label": _("Test 13 - EN 60754-2 Accidity"),
 					"description": _("Test 13 - EN 60754-2 Accidity")
 				}
