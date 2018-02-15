@@ -7,8 +7,8 @@
  "doctype": "Report", 
  "idx": 0, 
  "is_standard": "Yes", 
- "json": "{\"add_total_row\": 0, \"sort_by\": \"Material.modified\", \"add_totals_row\": 0, \"sort_order\": \"desc\", \"sort_by_next\": null, \"filters\": [[\"Material\", \"crono\", \"not like\", \"%CRONO%\"]], \"sort_order_next\": \"desc\", \"columns\": [[\"name\", \"Material\"], [\"material_code\", \"Material\"], [\"customer\", \"Material\"], [\"description\", \"Material\"], [\"crono\", \"Material\"]]}", 
- "modified": "2018-01-29 17:57:34.942821", 
+ "json": "{\"add_total_row\": 0, \"sort_by\": \"Material.modified\", \"add_totals_row\": 0, \"sort_order\": \"desc\", \"sort_by_next\": null, \"filters\": [[\"Material\", \"crono\", \"not like\", \"%CRONO%\"], [\"Material\", \"type\", \"!=\", \"Component\"]], \"sort_order_next\": \"desc\", \"columns\": [[\"name\", \"Material\"], [\"material_code\", \"Material\"], [\"customer\", \"Material\"], [\"description\", \"Material\"], [\"crono\", \"Material\"]]}", 
+ "modified": "2018-02-15 15:34:38.424495", 
  "modified_by": "Administrator", 
  "module": "Fire Testing", 
  "name": "Unidentified material", 
@@ -21,10 +21,10 @@
    "role": "System Manager"
   }, 
   {
-   "role": "Crono user"
+   "role": "Crono User"
   }, 
   {
-   "role": "Crono manager"
+   "role": "Crono Manager"
   }
  ]
 }
