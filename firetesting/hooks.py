@@ -30,12 +30,13 @@ app_include_css = ["/assets/css/firetesting.min.css"]
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
-doctype_js = {"EN 50399" :   "public/js/xlsx.full.min.js"}
-doctype_js = {"EN 61034 2" : "public/js/xlsx.full.min.js"}
-doctype_js = {"EN 50399" :      "public/js/fire-common.js"}
-doctype_js = {"EN 60332 1 2" :  "public/js/fire-common.js"}
-doctype_js = {"EN 61034 2" :    "public/js/fire-common.js"}
-doctype_js = {"EN 60754 2" :    "public/js/fire-common.js"}
+doctype_js = {
+    "EN 50399" :   "public/js/xlsx.full.min.js", 
+    "EN 61034 2" : "public/js/xlsx.full.min.js",
+    "EN 50399" :      "public/js/fire-common.js",
+    "EN 60332 1 2" :  "public/js/fire-common.js",
+    "EN 61034 2" :    "public/js/fire-common.js",
+    "EN 60754 2" :    "public/js/fire-common.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}

@@ -19,3 +19,25 @@ function get_material(frm) {
         }
     });
 }
+
+function get_customer(frm) {
+    frappe.call({
+        method: 'firetesting.fire_testing.doctype.crono.crono.get_customer',
+        args: { 
+            'doc': frm.doc.crono
+        },
+        callback: function(r) {
+            if (r.message) {
+                if (r.message.customer_name == "no customer defined!") {
+                    frappe.msgprint({
+                        title: __("Crono app"),
+                        message: __("Customer not found. Please enter the customer reference in the crono first."),
+                        indicator: 'red'
+                    });
+                } else {
+                    frm.set_value('customer', r.message.customer_name);
+                }
+            }
+        }
+    });
+}

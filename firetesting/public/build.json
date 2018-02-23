@@ -4,5 +4,8 @@
     ],
     "js/xlsx.full.min.js": [
         "public/js/xlsx.full.min.js"
+    ],
+    "js/fire-common.js": [
+        "public/js/fire-common.js"
     ]
 }

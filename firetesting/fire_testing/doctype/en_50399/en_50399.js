@@ -20,34 +20,37 @@ frappe.ui.form.on('EN 50399', {
             recalculate(frm);
         });
 	},
-    setup: function(frm) { 
-		// create title based on crono
-		if (frm.doc.crono != null) {
-            // define test name / title
-            var crono_number = frm.doc.crono.split("-");
-            if (crono_number.length > 1) {
-                var title = "LSF-" + crono_number[1] + "-10";
-            } else {
-                var title = "LSF-" + frm.doc.crono + "-10";
+    onload: function(frm) { 
+        // check if this is a new entry
+        if (frm.doc.name.startsWith("New")) {
+            // create title based on crono
+            if (frm.doc.crono != null) {
+                // define test name / title
+                var crono_number = frm.doc.crono.split("-");
+                if (crono_number.length > 1) {
+                    var title = "LSF-" + crono_number[1] + "-10";
+                } else {
+                    var title = "LSF-" + frm.doc.crono + "-10";
+                }
+                //frappe.msgprint(title);
+                cur_frm.set_value("title", title);
+                // get customer
+                get_customer(frm);
+                // read material
+                get_material(frm);
             }
-			//frappe.msgprint(title);
-			cur_frm.set_value("title", title);
-            // get customer (from cache)
-            cur_frm.add_fetch('crono','customer','customer');
-            // read material
-            get_material(frm);
-		}
-		else {
-			frappe.msgprint({
-				title: __("Crono app"),
-				message: __("Please create tests only from the Crono dashboard"),
-				indicator: 'red'
-			});
-		}
-	},
-    onload: function(frm) {
+            else {
+                frappe.msgprint({
+                    title: __("Crono app"),
+                    message: __("Please create tests only from the Crono dashboard"),
+                    indicator: 'red'
+                });
+            }
+        }
+        
+        // prepare charts
         loadCharts(frm);
-    }
+	}
 });
 
 function loadCharts(frm) {
@@ -99,28 +102,6 @@ function displayChart(container, source) {
         _img.src = this.src;
     }
     Img.src = source;
-}
-
-function get_material(frm) {
-    frappe.call({
-        method: 'firetesting.fire_testing.doctype.crono.crono.get_material',
-        args: { 
-            'doc': frm.doc.crono
-        },
-        callback: function(r) {
-            if (r.message) {
-                if (r.message.material_name == "no material defined!") {
-                    frappe.msgprint({
-                        title: __("Crono app"),
-                        message: __("Material not found. Please create a material in the crono first."),
-                        indicator: 'red'
-                    });
-                } else {
-                    frm.set_value('material', r.message.material_name);
-                }
-            }
-        }
-    });
 }
 
 function read_raw_data(frm) {
