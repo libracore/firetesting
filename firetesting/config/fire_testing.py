@@ -109,6 +109,12 @@ def get_data():
 				},
                 {
 					"type": "doctype",
+					"name": "Laboratory",
+					"label": _("Laboratory"),
+					"description": _("Laboratory"),
+				},
+                {
+					"type": "doctype",
 					"name": "Picture Description",
 					"label": _("Picture Description"),
 					"description": _("Picture Description"),
