@@ -11,6 +11,35 @@ class EN50399(Document):
     def onload(self):
         """Runs when document is loaded (not created)"""
         pass
+        
+    def set_mounting(self):
+        if not self.material:
+            frappe.msgprint( _("Please select a material") )
+            return
+        
+        material = frappe.get_doc("Material", self.material)
+        if material.diameter <= 5:
+            d = round(material.diameter, 1)
+            n = round(100 / (d * d), 0)
+            number_of_cables = "15 x {0}".format(n)
+            width = 10*15 + 10*14
+            spacing = 10
+        elif material.diameter >= 20:
+            n = round(320 / (round(material.diameter, 0) + 20))
+            number_of_cables = "{0}".format(n)
+            spacing = 20
+            width = material.diameter * n + (n - 1) * spacing
+        else:
+            spacing = material.diameter
+            n = (300 + round(material.diameter, 0)) / (2 * round(material.diameter, 0))
+            number_of_cables = "".format(n)
+            width = material.diameter * n + (n - 1) * spacing
+        
+        self.material_length = width
+        self.number_of_cables = number_of_cables
+        self.spacing = spacing
+        self.save()
+        return
 
 """ This function will import a transfer file content into the test record """
 @frappe.whitelist()

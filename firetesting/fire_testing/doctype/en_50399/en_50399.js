@@ -19,6 +19,10 @@ frappe.ui.form.on('EN 50399', {
         frm.add_custom_button(__("Re-calculate"), function() {
             recalculate(frm);
         });
+        frm.add_custom_button(__("Calculate mounting"), function() {
+            // set mounting parameters
+            set_mounting(frm);
+        });
 	},
     onload: function(frm) { 
         // check if this is a new entry
@@ -273,4 +277,18 @@ function download(filename, content) {
   element.click();
 
   document.body.removeChild(element);
+}
+
+/* define the mounting parameters */
+function set_mounting(frm) {
+    frappe.call({
+        method: 'set_mounting',
+        doc: frm.doc,
+        callback: function(response) {
+            refresh_field(['material_length', 'number_of_cables', 'spacing']);
+                        
+            // show a short information
+            frappe.show_alert( __("Mounting collected"));
+        }
+    }); 
 }
