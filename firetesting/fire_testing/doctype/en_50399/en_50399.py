@@ -534,7 +534,7 @@ def calculate_results(doc_name):
     
     doc.save()
     
-    return { 'output': 'Raw data imported and calulcated' }
+    return { 'output': 'Raw data imported and calculated' }
     
 def kelvin(temp):
     return temp + 273.15

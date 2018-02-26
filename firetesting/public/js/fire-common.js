@@ -41,3 +41,22 @@ function get_customer(frm) {
         }
     });
 }
+
+function reload_dialog(title, message) {
+    var d = new frappe.ui.Dialog({
+    	'title': title,
+    	'fields': [
+            {'fieldname': 'ht', 'fieldtype': 'HTML'}
+        ],
+        primary_action: function() {
+            // hide form
+            d.hide();
+            // reload form
+            location.reload();
+        }
+    });
+    
+    d.fields_dict.ht.$wrapper.html('<p>' + message + '</p>');
+    
+    d.show();
+}
