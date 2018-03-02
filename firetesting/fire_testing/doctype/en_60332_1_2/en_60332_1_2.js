@@ -13,9 +13,9 @@ frappe.ui.form.on('EN 60332 1 2', {
                 // define test name / title
                 var crono_number = frm.doc.crono.split("-");
                 if (crono_number.length > 1) {
-                    var title = "LSF-" + crono_number[1] + "-11";
+                    var title = "LSFIRE / " + crono_number[1] + " / 11";
                 } else {
-                    var title = "LSF-" + frm.doc.crono + "-11";
+                    var title = "LSFIRE / " + frm.doc.crono + " / 11";
                 }
                 //frappe.msgprint(title);
                 cur_frm.set_value("title", title);

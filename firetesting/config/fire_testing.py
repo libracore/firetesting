@@ -49,8 +49,8 @@ def get_data():
 				{
 					"type": "doctype",
 					"name": "EN 60754 2",
-					"label": _("Test 13 - EN 60754-2 Accidity"),
-					"description": _("Test 13 - EN 60754-2 Accidity")
+					"label": _("Test 13 - EN 60754-2 Acidity"),
+					"description": _("Test 13 - EN 60754-2 Acidity")
 				}
 			]
 		},
