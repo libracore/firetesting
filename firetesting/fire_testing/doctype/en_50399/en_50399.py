@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 import math
+from frappe import _
 
 class EN50399(Document):
     def onload(self):
@@ -339,6 +340,9 @@ def calculate_results(doc_name):
     doc = frappe.get_doc("EN 50399", doc_name)
     
     # prepare data 
+    if doc.logger_data == None:
+        frappe.msgprint( _("Please make sure that all data is available (missing logger data)") )
+        return
     lines = doc.logger_data.split('\n')
     column_config = { 'time': 0,
         'gas_mfm': 1,
@@ -533,6 +537,12 @@ def calculate_results(doc_name):
     spr_data_str = spr_data_str[:-1]
     tsp_data_str = tsp_data_str[:-1]
 
+    # compute flame spread
+    if doc.damage_zone_front > doc.damage_zone_back:
+        doc.flame_spread = float(doc.damage_zone_front) / 100.0
+    else:
+        doc.flame_spread = float(doc.damage_zone_back) / 100.0
+                
     # store output to document
     # result section
     doc.peak_hrr = peak_hrr
