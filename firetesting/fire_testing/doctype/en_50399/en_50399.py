@@ -525,7 +525,7 @@ def calculate_results(doc_name):
     for i in range(0, len(time)):
         time_data_str = time_data_str + "{0},".format(time[i])
         transmission_data_str = transmission_data_str + "{0:.3f},".format(transmission[i])
-        hrr_data_str = hrr_data_str + "{0:.3f},".format(q[i])
+        hrr_data_str = hrr_data_str + "{0:.3f},".format(hrr_av[i])
         thr_data_str = thr_data_str + "{0:.3f},".format(thr[i])
         spr_data_str = spr_data_str + "{0:.3f},".format(spr[i])
         tsp_data_str = tsp_data_str + "{0:.3f},".format(tsp[i])
