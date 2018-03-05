@@ -28,6 +28,7 @@ class EN50399(Document):
         self.material_length = width
         self.number_of_cables = number_of_cables
         self.spacing = spacing
+        self.required_cable = request_length
         self.save()
         return
 
@@ -572,21 +573,21 @@ def calculate_mounting(diameter=5.0):
     diameter = float(diameter)
     if diameter <= 5:
         d = round(diameter, 1)
-        n = round(100 / (d * d), 0)
+        n = int(100 / (d * d))
         number_of_cables = "15 x {0:.0f}".format(n)
         n = 15 * n
         width = round(10*15 + 10*14, 1)
         spacing = 10
     elif diameter >= 20:
-        n = round(320 / (round(diameter, 0) + 20))
+        n = int(320 / (int(diameter) + 20))
         number_of_cables = "{0:.0f}".format(n)
         spacing = 20
         width = round(diameter * n + (n - 1) * spacing, 1)
     else:
         spacing = round(diameter, 1)
-        n = (300 + round(diameter, 0)) / (2 * round(diameter, 0))
+        n = int((300 + int(diameter)) / (2 * int(diameter)))
         number_of_cables = "{0:.0f}".format(n)
         width = round(diameter * n + (n - 1) * spacing, 1)
-    # define length of cable required [mm]
-    request_length = 1.1 * n * width
+    # define length of cable required [m]
+    request_length = round(3.7 * n, 2)
     return number_of_cables, width, spacing, request_length
