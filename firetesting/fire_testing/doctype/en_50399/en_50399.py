@@ -19,22 +19,7 @@ class EN50399(Document):
             return
         
         material = frappe.get_doc("Material", self.material)
-        if material.diameter <= 5:
-            d = round(material.diameter, 1)
-            n = round(100 / (d * d), 0)
-            number_of_cables = "15 x {0}".format(n)
-            width = 10*15 + 10*14
-            spacing = 10
-        elif material.diameter >= 20:
-            n = round(320 / (round(material.diameter, 0) + 20))
-            number_of_cables = "{0}".format(n)
-            spacing = 20
-            width = material.diameter * n + (n - 1) * spacing
-        else:
-            spacing = material.diameter
-            n = (300 + round(material.diameter, 0)) / (2 * round(material.diameter, 0))
-            number_of_cables = "".format(n)
-            width = material.diameter * n + (n - 1) * spacing
+        number_of_cables, width, spacing = calculate_mounting(material.diameter)
         
         self.material_length = width
         self.number_of_cables = number_of_cables
@@ -577,3 +562,24 @@ def calculate_results(doc_name):
     
 def kelvin(temp):
     return temp + 273.15
+
+@frappe.whitelist()
+def calculate_mounting(diameter=5.0):
+    diameter = float(diameter)
+    if diameter <= 5:
+        d = round(diameter, 1)
+        n = round(100 / (d * d), 0)
+        number_of_cables = "15 x {0}".format(n)
+        width = 10*15 + 10*14
+        spacing = 10
+    elif diameter >= 20:
+        n = round(320 / (round(diameter, 0) + 20))
+        number_of_cables = "{0}".format(n)
+        spacing = 20
+        width = diameter * n + (n - 1) * spacing
+    else:
+        spacing = diameter
+        n = (300 + round(diameter, 0)) / (2 * round(diameter, 0))
+        number_of_cables = "".format(n)
+        width = diameter * n + (n - 1) * spacing
+    return number_of_cables, width, spacing

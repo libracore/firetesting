@@ -1,0 +1,25 @@
+{
+ "creation": "2017-12-27 20:54:31.614045", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "idx": 0, 
+ "icon": "fa fa-calculator",
+ "modified": "2018-03-05 20:55:01.983200", 
+ "modified_by": "Administrator", 
+ "module": "fire_testing", 
+ "name": "cable_length_calculator", 
+ "owner": "Administrator", 
+ "page_name": "cable_length_calculator", 
+ "roles": [
+  {
+   "role": "All"
+  }, 
+  {
+   "role": "System Manager"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Cable Length Calculator"
+}

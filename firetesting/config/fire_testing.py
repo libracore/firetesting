@@ -120,5 +120,17 @@ def get_data():
 					"description": _("Picture Description"),
 				}
 			]
-		}
+		},
+		{
+			"label": _("Tools"),
+			"icon": "fa fa-wrench",
+			"items": [
+				{
+					"type": "page",
+					"name": "cable_length_calculator",
+					"label": _("Cable Length Calculator"),
+					"description": _("Cable Length Calculator"),
+				}
+			]
+		}       
 	]

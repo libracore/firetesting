@@ -1,0 +1,22 @@
+{
+ "align_labels_right": 0, 
+ "creation": "2018-03-05 11:49:37.626643", 
+ "custom_format": 1, 
+ "disabled": 0, 
+ "doc_type": "EN 50399", 
+ "docstatus": 0, 
+ "doctype": "Print Format", 
+ "font": "Default", 
+ "html": "<p style=\"text-align:center;\">Foglio da conservare e inserire nella cartellina di laboratorio</p>\n<p style=\"text-align:center;\">stampato: {{ frappe.format_value(frappe.utils.now(), {'fieldtype': 'Date'}) }}</p>\n<table style=\"width:100%; \">\n <tr>\n  <td><p style=\"font-size:large;\"> Montagio</p></td>\n  <td>Compilare il foglio 'start'<td>\n </tr>\n</table>", 
+ "idx": 0, 
+ "line_breaks": 0, 
+ "modified": "2018-03-05 11:56:50.996448", 
+ "modified_by": "Administrator", 
+ "module": "Fire Testing", 
+ "name": "EN 50399 Instructions", 
+ "owner": "Administrator", 
+ "print_format_builder": 0, 
+ "print_format_type": "Server", 
+ "show_section_headings": 0, 
+ "standard": "Yes"
+}
