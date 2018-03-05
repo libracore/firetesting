@@ -19,8 +19,12 @@ class EN50399(Document):
             return
         
         material = frappe.get_doc("Material", self.material)
-        number_of_cables, width, spacing = calculate_mounting(material.diameter)
-        
+        if material.diameter and (not material.diameter == 0):
+            number_of_cables, width, spacing, request_length = calculate_mounting(material.diameter)
+        else:
+            frappe.msgprint( _("Invalid diameter. Please check material.") )
+            return
+            
         self.material_length = width
         self.number_of_cables = number_of_cables
         self.spacing = spacing
@@ -569,17 +573,20 @@ def calculate_mounting(diameter=5.0):
     if diameter <= 5:
         d = round(diameter, 1)
         n = round(100 / (d * d), 0)
-        number_of_cables = "15 x {0}".format(n)
-        width = 10*15 + 10*14
+        number_of_cables = "15 x {0:.0f}".format(n)
+        n = 15 * n
+        width = round(10*15 + 10*14, 1)
         spacing = 10
     elif diameter >= 20:
         n = round(320 / (round(diameter, 0) + 20))
-        number_of_cables = "{0}".format(n)
+        number_of_cables = "{0:.0f}".format(n)
         spacing = 20
-        width = diameter * n + (n - 1) * spacing
+        width = round(diameter * n + (n - 1) * spacing, 1)
     else:
-        spacing = diameter
+        spacing = round(diameter, 1)
         n = (300 + round(diameter, 0)) / (2 * round(diameter, 0))
-        number_of_cables = "".format(n)
-        width = diameter * n + (n - 1) * spacing
-    return number_of_cables, width, spacing
+        number_of_cables = "{0:.0f}".format(n)
+        width = round(diameter * n + (n - 1) * spacing, 1)
+    # define length of cable required [mm]
+    request_length = 1.1 * n * width
+    return number_of_cables, width, spacing, request_length

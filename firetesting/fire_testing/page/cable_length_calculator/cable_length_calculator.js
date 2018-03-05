@@ -26,12 +26,12 @@ frappe.pages['cable_length_calculator'].on_page_load = function(wrapper) {
                     'diameter': diameter
                 },
                 callback: function(r) {
-                    console.log(r);
                     if (r.message) {
                         var parent = page.main.find(".mounting-results").empty();
                         $('<p>' + __("Number of cables") + ": " + r.message[0] + "<br>" + 
-                            __("Width") + ": " + r.message[1] + "<br>" + 
-                            __("Spacing") + ": " + r.message[2] + '</p>').appendTo(parent);
+                            __("Width") + ": " + r.message[1] + " mm<br>" + 
+                            __("Spacing") + ": " + r.message[2] + " mm<br>" + 
+                            __("Required cable") + ": " + r.message[3] + ' mm</p>').appendTo(parent);
                     } 
                 }
             }); 
