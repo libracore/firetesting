@@ -60,3 +60,27 @@ function reload_dialog(title, message) {
     
     d.show();
 }
+
+function standardDeviation(values){
+  var avg = average(values);
+  
+  var squareDiffs = values.map(function(value){
+    var diff = value - avg;
+    var sqrDiff = diff * diff;
+    return sqrDiff;
+  });
+  
+  var avgSquareDiff = average(squareDiffs);
+
+  var stdDev = Math.sqrt(avgSquareDiff);
+  return stdDev;
+}
+
+function average(values){
+  var sum = values.reduce(function(sum, value){
+    return sum + value;
+  }, 0);
+
+  var avg = sum / values.length;
+  return avg;
+}

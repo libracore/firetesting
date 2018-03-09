@@ -30,6 +30,7 @@ frappe.ui.form.on('EN 61034 2', {
                 get_customer(frm);
                 // read material
                 get_material(frm);
+
             }
             else {
                 frappe.msgprint({
