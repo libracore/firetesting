@@ -5,9 +5,26 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
+from frappe import _
 
 class EN610342(Document):
-	pass
+    def set_mounting(self):
+        if not self.material:
+            frappe.msgprint( _("Please select a material") )
+            return
+        
+        material = frappe.get_doc("Material", self.material)
+        if material.diameter and (not material.diameter == 0):
+            number_of_bundles, number_of_cables, rotation = calculate_mounting(material.diameter)
+        else:
+            frappe.msgprint( _("Invalid diameter. Please check material.") )
+            return
+            
+        self.number_of_bundles = number_of_bundles
+        self.number_of_cables = number_of_cables
+        self.rotation = rotation
+        self.save()
+        return
 
 """ This function is used to import and normalise data from the data logger 
     raw: string with the data
@@ -128,3 +145,24 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
     
     return { 'output': 'Raw data imported and calculated' }
     
+@frappe.whitelist()
+def calculate_mounting(diameter=5.0):
+    diameter = float(diameter)
+    if diameter <= 5:
+        number_of_bundles = int(45 / (3 * diameter))
+        number_of_cables = 7 * number_of_bundles
+        rotation_20 = int(20 * diameter)
+        rotation_30 = int(30 * diameter)
+        rotation = "{0} - {1} mm".format(rotation_20, rotation_30)
+    else:
+        number_of_bundles = 0
+        if (diameter > 40):
+            number_of_cables = 1
+        elif (diameter > 20):
+            number_of_cables = 2
+        elif (diameter > 10):
+            number_of_cables = 3
+        else:
+            number_of_cables = int(45/diameter)
+        rotation = "-"
+    return number_of_bundles, number_of_cables, rotation

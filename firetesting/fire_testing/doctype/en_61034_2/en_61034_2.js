@@ -7,6 +7,10 @@ frappe.ui.form.on('EN 61034 2', {
         frm.add_custom_button(__("Load raw data"), function() {
             read_raw_data(frm);
         });
+        frm.add_custom_button(__("Calculate mounting"), function() {
+            // set mounting parameters
+            set_mounting(frm);
+        });
 	},
     onload: function(frm) { 
         // check if this is a new entry
@@ -104,4 +108,18 @@ function convert_raw_data(frm, raw) {
             }
         }
     });
+}
+
+/* define the mounting parameters */
+function set_mounting(frm) {
+    frappe.call({
+        method: 'set_mounting',
+        doc: frm.doc,
+        callback: function(response) {
+            refresh_field(['number_of_bundles', 'number_of_cables', 'rotation']);
+                        
+            // show a short information
+            frappe.show_alert( __("Mounting collected"));
+        }
+    }); 
 }
