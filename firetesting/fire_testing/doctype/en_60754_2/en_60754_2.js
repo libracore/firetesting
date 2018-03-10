@@ -3,11 +3,13 @@
 
 frappe.ui.form.on('EN 60754 2', {
 	refresh: function(frm) {
+        // only allow to pull data when saved and in draft
         if ((!frm.doc.name.startsWith("New")) && (frm.doc.docstatus == 0)) {
             frm.add_custom_button(__("Update composition table"), function() {
 
             });      
         }
+        // allow to push results to the material record
         frm.add_custom_button(__("Push results to material"), function() {
 
         });  
