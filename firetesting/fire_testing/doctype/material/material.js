@@ -40,6 +40,17 @@ frappe.ui.form.on('Material', {
 			});
 		}
 	},
+    onload: function(frm) {
+        // set filters
+        frm.fields_dict.components.grid.get_field('material_code').get_query =
+			function() {
+				return {
+					filters: {
+						"type": "Component"
+					}
+				}
+			};  
+    },
 	crono: function(frm) {
 		// fetch customer when changing crono
 		cur_frm.add_fetch('crono','customer','customer');
