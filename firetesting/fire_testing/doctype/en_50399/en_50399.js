@@ -285,7 +285,7 @@ function set_mounting(frm) {
         method: 'set_mounting',
         doc: frm.doc,
         callback: function(response) {
-            refresh_field(['material_length', 'number_of_cables', 'spacing']);
+            refresh_field(['material_length', 'number_of_cables', 'spacing', 'required_cable']);
                         
             // show a short information
             frappe.show_alert( __("Mounting collected"));

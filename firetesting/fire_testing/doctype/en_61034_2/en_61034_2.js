@@ -3,14 +3,17 @@
 
 frappe.ui.form.on('EN 61034 2', {
 	refresh: function(frm) {
-        // add utility buttons
-        frm.add_custom_button(__("Load raw data"), function() {
-            read_raw_data(frm);
-        });
-        frm.add_custom_button(__("Calculate mounting"), function() {
-            // set mounting parameters
-            set_mounting(frm);
-        });
+        // only place buttons on saved draft documents
+        if ((frm.doc.docstatus == 0) && (!frm.doc.name.startsWith("New "))) { 
+            // add utility buttons
+            frm.add_custom_button(__("Load raw data"), function() {
+                read_raw_data(frm);
+            });
+            frm.add_custom_button(__("Calculate mounting"), function() {
+                // set mounting parameters
+                set_mounting(frm);
+            });
+        }
 	},
     onload: function(frm) { 
         // check if this is a new entry
@@ -45,7 +48,7 @@ frappe.ui.form.on('EN 61034 2', {
 
 function read_raw_data(frm) {
     var d = new frappe.ui.Dialog({
-    	'title': 'Read raw data (xlsx)',
+    	'title': 'Read raw data (txt)',
     	'fields': [
             {'fieldname': 'ht', 'fieldtype': 'HTML'}
         ],
@@ -60,7 +63,7 @@ function read_raw_data(frm) {
         }
     });
     
-    d.fields_dict.ht.$wrapper.html('<p>' + __("Please select the raw data file (xlsx format).") + '</p>' +
+    d.fields_dict.ht.$wrapper.html('<p>' + __("Please select the raw data file (txt format).") + '</p>' +
         '<p>' + __("Data needs to contain time, temperature and transmittance") + '</p>' +
         '<input type="file" id="input_file" />');
     
@@ -76,19 +79,14 @@ function read_raw_file(frm, file) {
         reader.onload = function(e) {
             /* read the file */
             var data = e.target.result;
-            /* load the workbook */
-            var workbook = XLSX.read(data, {type: 'binary'});
-            var first_sheet_name = workbook.SheetNames[0];
-            /* convert content to csv */
-            var csv = XLSX.utils.sheet_to_csv(workbook.Sheets[first_sheet_name]);
-            /* write content to form raw field */
-            convert_raw_data(frm, csv);
+
+            convert_raw_data(frm, data);
         }
         // assign an error handler event
         reader.onerror = function (event) {
             frappe.msgprint(__("Error reading file"), __("Error"));
         }
-        reader.readAsBinaryString(file); 
+        reader.readAsText(file, "UTF-8"); 
     }
     else
     {
@@ -98,14 +96,17 @@ function read_raw_file(frm, file) {
 
 function convert_raw_data(frm, raw) {
     frappe.call({
-        method: 'firetesting.fire_testing.doctype.en_61034_2.en_61034_2.convert_data',
+        method: 'convert_data',
+        doc: frm.doc,
         args: { 
-            'raw': raw,
-            'doc_name': frm.doc.name
+            'raw': raw
         },
         callback: function(r) {
             if (r.message) {
-                reload_dialog(__("Import completed"), __(r.message.output));
+                frappe.show_alert(r.message.output);
+                refresh_field('raw_time','raw_transmittance', 'raw_temperature',
+                    'min_transmittance', 'starting_temperature', 'maximum_temperature',
+                    'end_time');
             }
         }
     });

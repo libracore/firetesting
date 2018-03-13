@@ -26,124 +26,89 @@ class EN610342(Document):
         self.save()
         return
 
-""" This function is used to import and normalise data from the data logger 
-    raw: string with the data
-    doc_name: name of this document record
-    env_T: environmental temperature, in °C
-    env_P: environmental pressure, in Pa
-    env_rh: environmental relative humidity, in %
-"""
-@frappe.whitelist()
-def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
-    # get parent document
-    doc = frappe.get_doc("EN 61034 2", doc_name)
-    
-    # prepare input data
-    raw_lines = raw.split('\n')
-    """ field definition: (V1)          (V2)
-        A-0: full time					full time
-        B-1: T3 (duct) [°C]				0.0 - TAMB_50399
-        C-2: Flow Cavi 					0.1 - Tduct1_50399 {T duct 1}
-        D-3: Fumi Cavi					0.2 - Tduct3_50399 {T duct 2}
-        E-4: T1 (duct) [°C]				0.5 - Flow_50399 {DPT}
-        F-5: T2 (duct) [°C]				0.6 - SMOKE_50399 {transmission}
-        G-6: O2 [%]						0.7 - AirIN_50399
-        H-7: CO2 [%]					0.8 - T_IN_50399
-        I-8: CO [%]						1.0 - Gas O2 {O2}
-        J-9: Gas						1.1 - Gas CO2 {CO2}
-        K-10: Gas						1.2 - Gas CO {CO}
-        L-11: Burner output (Q) [kW]	1.4 - Gas used
-        M-12: T (duct) [°C]				80.1 - Gas_Burner_50399 {gad mfm}
-        N-13: Flow duct					80.2 - Qburner_50399 {Q burner}
-        O-14: RHR calib					80.3 - Tduct_50399
-        P-15: RHR test					80.4 - FlowDuct_50399
-        Q-16: CO ppm					80.10 - RHR_Cal_50399
-        R-17: Smoke [%]					80.11 - RHR_Test_50399
-        S-18:							80.12 - CO_net_50399
-        T-19:							80.13 - Epthane_RHR_50399
-        U-20:							80.14 - Meth_RHR_50399
-        V-21:							80.15 - Flow_IN_50399
-        W-22:							80.16 - air_IN_50399
-        X-23:
-        Y-24:
-        Z-25:
-    """ 	
-    # configuration of columns of raw file
-    column_config = { 
-        'time': 0,
-        'burner_output': 13, 
-        'gas_mfm': 12, 
-        'dpt': 4,
-        'transmission': 5,
-        'o2': 8,
-        'co2': 9,
-        'amb_t': -1,
-        't_duct_1': 2,
-        't_duct_2': 3,
-        't_duct_3': -1,
-        'co': 10,
-        'apt': -1,
-        'air_mfm': -1,
-        'pdm': -1,
-        'pdc': -1
-    }
-    
-    # compile the data vectors
-    time = ""
-    transmittance = ""
-    temperature = ""
-    min_transmittance = 100
-    max_temperature = 0
-    end_time = 0
-    fields = raw_lines[1].split(',')
-    starting_temperature = fields[column_config['t_duct_1']]
-    for i in range(1, len(raw_lines)):
-        fields = raw_lines[i].split(',')
-        if len(fields) > 4:
-            end_time = i * 3
-            time += "{0},".format(end_time)
-            _transmittance = fields[column_config['transmission']]
-            transmittance += "{0},".format(_transmittance)
-            if _transmittance < min_transmittance:
-                min_transmittance = _transmittance
-            _temperature = fields[column_config['t_duct_1']]
-            temperature += "{0},".format(_temperature)
-            if _temperature > max_temperature:
-                max_temperature = _temperature
-            
-    # remove trailing comma
-    time = time[:-1]
-    transmittance = transmittance[:-1]
-    temperature = temperature[:-1]
-    
-    # thin out data for chart (only 1 data point per minute, 1/20)
-    times = time.split(',')
-    transmittances = transmittance.split(',')
-    temperatures = temperature.split(',')
-    time = ""
-    transmittance = ""
-    temperature = ""
-    for i in range(0, len(times), 20):
-        time += "{0},".format(times[i])
-        transmittance += "{0},".format(transmittances[i])
-        temperature += "{0},".format(temperatures[i])
+    """ This function is used to import and normalise data from the data logger 
+        raw: string with the data
+    """
+    def convert_data(self, raw):       
+        # prepare input data
+        raw_lines = raw.split('\n')
+        """ field definition: 
+            0: date (dd.mm.yyy)	
+            1: time (hh:mm:ss)
+            2: sensor [mV] (float)
+            3: temperature [°C] (float)
+            4: transmittance [%] (percent)
+        """ 	
+        # configuration of columns of raw file
+        column_config = { 
+            'date': 0,
+            'time': 1,
+            'sensor': 2, 
+            'temperature': 3, 
+            'transmittance': 4
+        }
         
-    # remove trailing comma
-    time = time[:-1]
-    transmittance = transmittance[:-1]
-    temperature = temperature[:-1]
-            
-    # store output to document
-    doc.raw_time = time
-    doc.raw_transmittance = transmittance
-    doc.raw_temperature = temperature
-    doc.min_transmittance = min_transmittance
-    doc.starting_temperature = starting_temperature
-    doc.maximum_temperature = max_temperature
-    doc.end_time = end_time
-    doc.save()
-    
-    return { 'output': 'Raw data imported and calculated' }
+        # compile the data vectors
+        time = []
+        transmittance = []
+        temperature = []
+        min_transmittance = 100
+        max_temperature = 0
+        end_time = 0
+        # first data in row 8
+        separator = "\t"
+        fields = raw_lines[8].split(separator)
+        if len(fields) < 5:
+            # try comma as separator
+            separator = ","
+            fields = raw_lines[8].split(separator)
+            if len(fields) < 5:
+                # try semicolon as separator
+                separator = ";"
+                fields = raw_lines[8].split(separator)
+        if len(fields) < 5:
+            # fields not found, invalid input
+            return {'output': "Invalid input format" }
+        starting_temperature = fields[column_config['temperature']]
+        for i in range(8, len(raw_lines)):
+            fields = raw_lines[i].split(separator)
+            if len(fields) > 4:
+                # start time has a 120 sec offset
+                end_time = ((i - 8) * 3) - 120
+                time.append(end_time)
+                _transmittance = round(float(fields[column_config['transmittance']]), 2)
+                transmittance.append(_transmittance)
+                if _transmittance < min_transmittance:
+                    min_transmittance = _transmittance
+                _temperature = round(float(fields[column_config['temperature']]), 1)
+                temperature.append(_temperature)
+                if _temperature > max_temperature:
+                    max_temperature = _temperature
+
+        # thin out data for chart (only 1 data point per minute, 1/20)
+        time_short = ""
+        transmittance_short = ""
+        temperature_short = ""
+        for i in range(0, len(time), 20):
+            time_short += "{0},".format(time[i])
+            transmittance_short += "{0},".format(transmittance[i])
+            temperature_short += "{0},".format(temperature[i])
+           
+        time_short = time_short[:-1]
+        transmittance_short = transmittance_short[:-1]
+        temperature_short = temperature_short[:-1]
+        
+        # store output to document
+        self.raw_time = time_short
+        self.raw_transmittance = transmittance_short
+        self.raw_temperature = temperature_short
+        self.min_transmittance = min_transmittance
+        self.starting_temperature = starting_temperature
+        self.maximum_temperature = max_temperature
+        self.end_time = end_time
+        self.save()
+        
+        return { 'output': 'Raw data imported and calculated' }
     
 @frappe.whitelist()
 def calculate_mounting(diameter=5.0):
