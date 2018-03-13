@@ -41,6 +41,7 @@
    "reqd": 0, 
    "search_index": 0, 
    "set_only_once": 0, 
+   "translatable": 0, 
    "unique": 0
   }
  ], 
@@ -54,8 +55,8 @@
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 0, 
- "modified": "2018-02-27 13:55:28.230843", 
- "modified_by": "lars.mueller@libracore.com", 
+ "modified": "2018-03-13 11:39:52.163345", 
+ "modified_by": "Administrator", 
  "module": "Fire Testing", 
  "name": "Laboratory", 
  "name_case": "", 
@@ -95,7 +96,7 @@
    "print": 1, 
    "read": 1, 
    "report": 1, 
-   "role": "Crono manager", 
+   "role": "Crono Manager", 
    "set_user_permissions": 0, 
    "share": 1, 
    "submit": 0, 
