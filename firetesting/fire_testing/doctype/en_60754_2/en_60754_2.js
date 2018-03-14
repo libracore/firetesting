@@ -84,13 +84,17 @@ function fetch_components(frm) {
                         frappe.model.set_value(child.doctype, child.name, 'material', component.material_code);
                         frappe.model.set_value(child.doctype, child.name, 'mass', component.mass);
                         cur_frm.refresh_field('composition_results');
+                        resolve_material_data(frm);
                     });
                 }
             }
     });
-    
+
+}
+
+function resolve_material_data(frm) {
     // resolve material data
-     cur_frm.get_field('composition_results').grid.grid_rows.forEach(function(row) {
+    cur_frm.get_field('composition_results').grid.grid_rows.forEach(function(row) {
         frappe.call({
             "method": "frappe.client.get",
             "args": {
@@ -103,6 +107,7 @@ function fetch_components(frm) {
                     frappe.model.set_value(row.doc.doctype, row.doc.name, 'description', r.message.description);
                     frappe.model.set_value(row.doc.doctype, row.doc.name, 'ph', r.message.ph);
                     frappe.model.set_value(row.doc.doctype, row.doc.name, 'conductivity', r.message.conductivity);
+                    frappe.model.set_value(row.doc.doctype, row.doc.name, 'reference', r.message.reference);                    
                     cur_frm.refresh_field('composition_results');
                 }
             }
