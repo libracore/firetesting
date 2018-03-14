@@ -94,6 +94,20 @@ def get_data():
 					"name": "Unidentified material",
 					"label": _("Unidentified material"),
 					"description": _("Unidentified material"),
+				},
+				{
+					"type": "report",
+                    "doctype": "Material",
+					"name": "Incomplete material",
+					"label": _("Incomplete material"),
+					"description": _("Incomplete material"),
+				},
+				{
+					"type": "report",
+                    "doctype": "Material",
+					"name": "Acidity Database",
+					"label": _("Acidity Database"),
+					"description": _("Acidity Database"),
 				}
 			]
 		},
