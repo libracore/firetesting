@@ -10,9 +10,11 @@ frappe.ui.form.on('EN 60754 2', {
             });      
         }
         // allow to push results to the material record
-        frm.add_custom_button(__("Push results to material"), function() {
-            frappe.msgprint("Not yet implemented");
-        });
+        if (!frm.doc.name.startsWith("New")) {
+            frm.add_custom_button(__("Push results to material"), function() {
+                push_results_to_material(frm);
+            });
+        }
           
 	},
     onload: function(frm) { 
@@ -114,3 +116,36 @@ function resolve_material_data(frm) {
         });
      });
 }
+
+/* this function is used to calculate the results and push them to the material record */
+function push_results_to_material(frm) {
+    var trace = "";
+    
+    var ph_values = frm.doc.ph_values;
+    // create a list of all measured materials
+    var materials = new Array();  
+    ph_values.forEach(function(entry) {
+        if (entry.material != null) {
+            if (materials.indexOf(entry.material) == -1) {
+                materials.push(entry.material);
+            }
+        } 
+    });
+    
+    // calculate value per material
+    materials.forEach(function(material) {
+        var results = new Array(); 
+        ph_values.forEach(function(entry) {
+            if (entry.material == material) {
+                results.push(entry.ph);
+            } 
+        });
+        var average = average(results);
+        var stddev = standardDeviation(results);
+        trace += material + ": pH " + average + "\n"; 
+    });
+    
+    // write output
+    frm.set_value('raw', trace);
+}
+
