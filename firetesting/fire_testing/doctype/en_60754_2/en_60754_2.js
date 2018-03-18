@@ -132,7 +132,8 @@ function push_results_to_material(frm) {
         } 
     });
     
-    // calculate value per material
+    // calculate pH value per material
+    var phs = new Array();
     materials.forEach(function(material) {
         var results = new Array(); 
         ph_values.forEach(function(entry) {
@@ -140,11 +141,56 @@ function push_results_to_material(frm) {
                 results.push(entry.ph);
             } 
         });
-        var average = average(results);
-        var stddev = standardDeviation(results);
-        trace += material + ": pH " + average + "\n"; 
+        if (results.length > 2) {
+            var avg = average(results);
+            var stddev = standardDeviation(results);
+            trace += material + ": pH " + avg + "\n"; 
+            phs.push(avg);
+        } else {
+            frappe.mspgrint( __("Not sufficient measurements (pH) for {0} (at least 3 measuremenst required").replace("{0}", material));
+            phs.push(0);
+        }        
     });
     
+    // calculate conductivity value per material
+    var conductivities = new Array();
+    materials.forEach(function(material) {
+        var results2 = new Array(); 
+        conductivity_values.forEach(function(entry) {
+            if (entry.material == material) {
+                results2.push(entry.conductivity);
+            } 
+        });
+        if (results2.length > 2) {
+            var avg2 = average(results2);
+            var stddev2 = standardDeviation(results2);
+            trace += material + ": conductivity " + avg2 + "\n"; 
+            conductivities.push(avg2);
+        } else {
+            frappe.mspgrint( __("Not sufficient measurements (conductivity) for {0} (at least 3 measuremenst required").replace("{0}", material));
+            conductivities.push(0);
+        }        
+    });
+
+    // push results to material records
+    for (i = 0; i < materials.length; i++) {
+        if ((phs[i]) != 0) && (conductivities[i] != 0) {
+            frappe.call({
+                method: 'firetesting.fire_testing.doctype.material.material.update_measurements',
+                args: { 
+                    material: material[i],
+                    ph: phs[i],
+                    conducivity: conducivities[i],
+                    reference: frm.doc.name
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        frappe.show_alert(r.message.output);
+                    }
+                }
+            });
+        }
+    }
     // write output
     frm.set_value('raw', trace);
 }
