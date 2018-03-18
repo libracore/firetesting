@@ -23,7 +23,7 @@ class Material(Document):
     Data is pushed here from the EN 60754-2 client script 
 """
 @frappe.whitelist()
-def update_measurements(material, ph, conducivity, reference):
+def update_measurements(material, ph, conductivity, reference):
     # initialise document
     doc = frappe.get_doc("Material", material)
     if not doc:
