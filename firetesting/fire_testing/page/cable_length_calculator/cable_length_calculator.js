@@ -31,7 +31,7 @@ frappe.pages['cable_length_calculator'].on_page_load = function(wrapper) {
                         $('<p>' + __("Number of cables") + ": " + r.message[0] + "<br>" + 
                             __("Width") + ": " + r.message[1] + " mm<br>" + 
                             __("Spacing") + ": " + r.message[2] + " mm<br>" + 
-                            __("Required cable") + ": " + r.message[3] + ' mm</p>').appendTo(parent);
+                            __("Required cable") + ": " + r.message[3] + ' m</p>').appendTo(parent);
                     } 
                 }
             }); 
