@@ -6,6 +6,5 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 
-class EN607542(Document):
+class ClassificationEN6033212(Document):
 	pass
-	

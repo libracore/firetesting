@@ -579,13 +579,13 @@ def calculate_mounting(diameter=5.0):
         width = round(10*15 + 10*14, 1)
         spacing = 10
     elif diameter >= 20:
-        n = int(320 / (int(diameter) + 20))
+        n = int(320 / (round(diameter, 0) + 20))
         number_of_cables = "{0:.0f}".format(n)
         spacing = 20
         width = round(diameter * n + (n - 1) * spacing, 1)
     else:
         spacing = round(diameter, 1)
-        n = int((300 + int(diameter)) / (2 * int(diameter)))
+        n = int((300 + round(diameter, 0)) / (2 * round(diameter, 0)))
         number_of_cables = "{0:.0f}".format(n)
         width = round(diameter * n + (n - 1) * spacing, 1)
     # define length of cable required [m]
