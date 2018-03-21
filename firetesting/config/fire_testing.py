@@ -117,7 +117,7 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
-					"name": "Test Apparatus",
+					"name": "Apparatus",
 					"label": _("Test Apparatus"),
 					"description": _("Test Apparatus"),
 				},
