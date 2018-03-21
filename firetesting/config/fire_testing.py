@@ -60,9 +60,9 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
-					"name": "Test request",
-					"label": _("Test request"),
-					"description": _("Test request"),
+					"name": "Customer Test Request",
+					"label": _("Customer Test Request"),
+					"description": _("Customer Test Request"),
 				},
 				{
 					"type": "doctype",

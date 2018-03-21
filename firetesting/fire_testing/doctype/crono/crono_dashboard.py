@@ -11,7 +11,7 @@ def get_data():
 
          {
             'label': _('Documents'),
-            'items': ['Test request', 'Sample identification', 'Technical data sheet']
+            'items': ['Customer Test Request', 'Sample identification', 'Technical data sheet']
          },
          {
             'label': _('Tests'),
