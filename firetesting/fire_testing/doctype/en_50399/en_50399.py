@@ -364,7 +364,7 @@ def calculate_results(doc_name):
     # read constants
     if not doc.test_apparatus:
         return { 'output': 'Test apparatus not set' }
-    apparatus = frappe.get_doc("Test Apparatus", doc.test_apparatus)
+    apparatus = frappe.get_doc("Apparatus", doc.test_apparatus)
     kt = apparatus.en50399_kt
     kp = apparatus.en50399_kp
     d = apparatus.en50399_d
@@ -532,7 +532,29 @@ def calculate_results(doc_name):
         doc.flame_spread = float(doc.damage_zone_front) / 100.0
     else:
         doc.flame_spread = float(doc.damage_zone_back) / 100.0
-                
+              
+    # compute classification
+    if doc.flame_spread <= 1.5 and doc.thr_1200s <= 15 and doc.peak_hrr <= 30 and doc.figra <= 150:
+        class_general = "B2 ca"
+    elif doc.flame_spread <= 2 and doc.thr_1200s <= 30 and doc.peak_hrr <= 60 and doc.figra <= 300:
+        class_general = "C ca"
+    elif doc.thr_1200s <= 70 and doc.peak_hrr <= 400 and doc.figra <= 1300:
+        class_general = "D ca"
+    else:
+        class_general = "nc"
+    if doc.peak_spr <= 0.25 and doc.tsp_1200s <= 50:
+        class_smoke = "s1"
+    elif doc.peak_spr <= 1.5 and doc.tsp_1200s <= 400:
+        class_smoke = "s2"
+    else:
+        class_smoke = "s3"
+    if doc.dripping == "no":
+        class_dripping = "d0"
+    elif "&lt;" in doc.dripping:
+        class_dripping = "d1"
+    else:
+        class_dripping = "d2"
+    
     # store output to document
     # result section
     doc.peak_hrr = peak_hrr
@@ -560,6 +582,9 @@ def calculate_results(doc_name):
     doc.transmittance_min_time = min_transmission_time
     doc.spr_max = peak_spr
     doc.spr_max_time = peak_spr_time
+    doc.class_general = class_general
+    doc.class_smoke = class_smoke
+    doc.class_dripping = class_dripping
     
     doc.save()
     
