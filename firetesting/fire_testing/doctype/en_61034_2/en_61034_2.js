@@ -4,7 +4,7 @@
 frappe.ui.form.on('EN 61034 2', {
 	refresh: function(frm) {
         // only place buttons on saved draft documents
-        if ((frm.doc.docstatus == 0) && (!frm.doc.name.startsWith("New "))) { 
+        if ((frm.doc.docstatus == 0) && (!frm.doc.__islocal)) { 
             // add utility buttons
             frm.add_custom_button(__("Load raw data"), function() {
                 read_raw_data(frm);
@@ -17,7 +17,7 @@ frappe.ui.form.on('EN 61034 2', {
 	},
     onload: function(frm) { 
         // check if this is a new entry
-        if (frm.doc.name.startsWith("New")) {
+        if (frm.doc.__islocal) {
             // create title based on crono
             if (frm.doc.crono != null) {
                 // define test name / title

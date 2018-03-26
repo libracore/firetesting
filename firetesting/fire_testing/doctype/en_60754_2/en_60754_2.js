@@ -4,7 +4,7 @@
 frappe.ui.form.on('EN 60754 2', {
 	refresh: function(frm) {
         // only allow to pull data when saved and in draft
-        if ((!frm.doc.name.startsWith("New")) && (frm.doc.docstatus == 0)) {
+        if ((!frm.doc.__islocal) && (frm.doc.docstatus == 0)) {
             frm.add_custom_button(__("Update composition table"), function() {
                 fetch_components(frm);
             });   
@@ -13,7 +13,7 @@ frappe.ui.form.on('EN 60754 2', {
             });   */
         }
         // allow to push results to the material record
-        if (!frm.doc.name.startsWith("New")) {
+        if (!frm.doc.__islocal) {
             frm.add_custom_button(__("Push results to material"), function() {
                 push_results_to_material(frm);
             });
@@ -22,7 +22,7 @@ frappe.ui.form.on('EN 60754 2', {
 	},
     onload: function(frm) { 
         // check if this is a new entry
-        if (frm.doc.name.startsWith("New")) {
+        if (frm.doc.__islocal) {
             // create title based on crono
             if (frm.doc.crono != null) {
                 // define test name / title

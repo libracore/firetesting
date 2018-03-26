@@ -9,7 +9,7 @@ frappe.ui.form.on('EN 60332 1 2', {
 	},
     onload: function(frm) { 
         // check if this is a new entry
-        if (frm.doc.name.startsWith("New")) {
+        if (frm.doc.__islocal) {
             // create title based on crono
             if (frm.doc.crono != null) {
                 // define test name / title
