@@ -35,16 +35,16 @@ class EN610342(Document):
         """ field definition: 
             0: date (dd.mm.yyy)	
             1: time (hh:mm:ss)
-            2: sensor [mV] (float)
-            3: temperature [°C] (float)
+            2: temperature [°C] (float)
+            3: sensor [mV] (float)
             4: transmittance [%] (percent)
         """ 	
         # configuration of columns of raw file
         column_config = { 
             'date': 0,
             'time': 1,
-            'sensor': 2, 
-            'temperature': 3, 
+            'sensor': 3, 
+            'temperature': 2, 
             'transmittance': 4
         }
         
@@ -60,15 +60,15 @@ class EN610342(Document):
         fields = raw_lines[8].split(separator)
         if len(fields) < 5:
             # try comma as separator
-            separator = ","
+            separator = ";"
             fields = raw_lines[8].split(separator)
             if len(fields) < 5:
                 # try semicolon as separator
-                separator = ";"
+                separator = ","
                 fields = raw_lines[8].split(separator)
         if len(fields) < 5:
             # fields not found, invalid input
-            return {'output': "Invalid input format" }
+            return { 'output' : "Invalid input format" }
         starting_temperature = fields[column_config['temperature']]
         for i in range(8, len(raw_lines)):
             fields = raw_lines[i].split(separator)
@@ -76,11 +76,17 @@ class EN610342(Document):
                 # start time has a 120 sec offset
                 end_time = ((i - 8) * 3) - 120
                 time.append(end_time)
-                _transmittance = round(float(fields[column_config['transmittance']]), 2)
+                try:
+                    _transmittance = round(float(fields[column_config['transmittance']]), 2)
+                except ValueError:
+                    _transmittance = round(float(fields[column_config['transmittance']].replace(',', '.')), 2)
                 transmittance.append(_transmittance)
                 if _transmittance < min_transmittance:
                     min_transmittance = _transmittance
-                _temperature = round(float(fields[column_config['temperature']]), 1)
+                try:
+                    _temperature = round(float(fields[column_config['temperature']]), 1)
+                except ValueError:
+                    _temperature = round(float(fields[column_config['temperature']].replace(',', '.')), 1)
                 temperature.append(_temperature)
                 if _temperature > max_temperature:
                     max_temperature = _temperature
