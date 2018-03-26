@@ -96,7 +96,7 @@ class EN610342(Document):
         transmittance_short = ""
         temperature_short = ""
         for i in range(0, len(time), 20):
-            time_short += "{0},".format(time[i])
+            time_short += "{0},".format((time[i]/60))
             transmittance_short += "{0},".format(transmittance[i])
             temperature_short += "{0},".format(temperature[i])
            
