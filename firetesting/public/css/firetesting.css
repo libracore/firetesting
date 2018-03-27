@@ -1,7 +1,7 @@
-/* deactivate delete button for attachments */
-.attachment-row>.close {
+/* deactivate delete button for attachments (deactivated by request #574) */
+/*.attachment-row>.close {
 	display: none!important;
-}
+}*/
 
 /* define black borders for tables */
 .blackborder {
