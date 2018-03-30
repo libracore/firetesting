@@ -69,24 +69,22 @@ class EN610342(Document):
         if len(fields) < 5:
             # fields not found, invalid input
             return { 'output' : "Invalid input format" }
-        starting_temperature = fields[column_config['temperature']]
+        starting_temperature = get_value(fields[column_config['temperature']], 1)
         for i in range(8, len(raw_lines)):
             fields = raw_lines[i].split(separator)
             if len(fields) > 4:
                 # start time has a 120 sec offset
-                end_time = ((i - 8) * 3) - 120
+                _time = ((i - 8) * 3) - 120
+                # stop after 40 minutes
+                if _time > (40 * 60):
+                    continue
+                end_time = _time
                 time.append(end_time)
-                try:
-                    _transmittance = round(float(fields[column_config['transmittance']]), 2)
-                except ValueError:
-                    _transmittance = round(float(fields[column_config['transmittance']].replace(',', '.')), 2)
+                _transmittance = get_value(fields[column_config['transmittance']], 2)
                 transmittance.append(_transmittance)
                 if _transmittance < min_transmittance:
                     min_transmittance = _transmittance
-                try:
-                    _temperature = round(float(fields[column_config['temperature']]), 1)
-                except ValueError:
-                    _temperature = round(float(fields[column_config['temperature']].replace(',', '.')), 1)
+                _temperature = get_value(fields[column_config['temperature']], 1)
                 temperature.append(_temperature)
                 if _temperature > max_temperature:
                     max_temperature = _temperature
@@ -115,7 +113,15 @@ class EN610342(Document):
         self.save()
         
         return { 'output': 'Raw data imported and calculated' }
-    
+
+# this function parses a decimal string value to a float
+def get_value(value, decimals=2):
+    try:
+        _value = round(float(value), decimals)
+    except ValueError:
+        _value = round(float(value.replace(',', '.')), decimals)
+    return _value
+
 @frappe.whitelist()
 def calculate_mounting(diameter=5.0):
     diameter = float(diameter)
