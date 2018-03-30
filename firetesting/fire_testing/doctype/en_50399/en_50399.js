@@ -60,43 +60,43 @@ frappe.ui.form.on('EN 50399', {
 function loadCharts(frm) {
     /* heat release  */
     displayChart('chartHRR', 
-        'https://data.libracore.ch/server-side-charts/api/scientific_chart.php' +
+        'https://data.libracore.ch/server-side-charts/api/en_50399.php' +
         '?x[0]=' + frm.doc.data_time +
         '&y[0]=' + frm.doc.data_hrr + 
-        '&legend=' + frm.doc.title +
+        '&legend[0]=' + frm.doc.title +
         '&title=HRR' + 
-        '&scale=0,1200,0,' + frm.doc.hrr_max);
+        '&scale=0,1200,0,' + frm.doc.chart_hrr_y_max);
     displayChart('chartTHR', 
-        'https://data.libracore.ch/server-side-charts/api/scientific_chart.php' +
+        'https://data.libracore.ch/server-side-charts/api/en_50399.php' +
         '?x[0]=' + frm.doc.data_time +
         '&y[0]=' + frm.doc.data_thr + 
-        '&legend=' + frm.doc.title +
+        '&legend[0]=' + frm.doc.title +
         '&title=THR' + 
-        '&scale=0,1200,0,' + frm.doc.thr_1200s);  
+        '&scale=0,1200,0,' + frm.doc.chart_thr_y_max);  
     /* smoke production */
     displayChart('chartSPR', 
-        'https://data.libracore.ch/server-side-charts/api/scientific_chart.php' +
+        'https://data.libracore.ch/server-side-charts/api/en_50399.php' +
         '?x[0]=' + frm.doc.data_time +
         '&y[0]=' + frm.doc.data_spr + 
-        '&legend=' + frm.doc.title +
+        '&legend[0]=' + frm.doc.title +
         '&title=SPR' + 
-        '&scale=0,1200,0,' + frm.doc.spr_max); 
+        '&scale=0,1200,0,' + frm.doc.chart_spr_y_max); 
     displayChart('chartTSP', 
-        'https://data.libracore.ch/server-side-charts/api/scientific_chart.php' +
+        'https://data.libracore.ch/server-side-charts/api/en_50399.php' +
         '?x[0]=' + frm.doc.data_time +
         '&y[0]=' + frm.doc.data_tsp + 
-        '&legend=' + frm.doc.title +
+        '&legend[0]=' + frm.doc.title +
         '&title=TSP' + 
-        '&scale=0,1200,0,' + frm.doc.tsp_1200s); 
+        '&scale=0,1200,0,' + frm.doc.chart_tsp_y_max); 
         
     /* Transmittance */
     displayChart('chartTransmittance',
-        'https://data.libracore.ch/server-side-charts/api/scientific_chart.php' +
+        'https://data.libracore.ch/server-side-charts/api/en_50399.php' +
         '?x[0]=' + frm.doc.data_time +
         '&y[0]=' + frm.doc.data_transmission + 
-        '&legend=' + frm.doc.title +
+        '&legend[0]=' + frm.doc.title +
         '&title=Transmittance' + 
-        '&scale=0,1200,0,100'); 
+        '&scale=0,1200,0,' + frm.doc.chart_transmittance_y_max); 
 }
 
 function displayChart(container, source) {

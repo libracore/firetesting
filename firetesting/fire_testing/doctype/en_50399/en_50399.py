@@ -609,7 +609,11 @@ def calculate_results(doc_name):
     doc.class_general = class_general
     doc.class_smoke = class_smoke
     doc.class_dripping = class_dripping
-    
+    doc.chart_hrr_y_max = peak_hrr + 1
+    doc.chart_thr_y_max = doc.thr_1200s + 1
+    doc.chart_spr_y_max = peak_spr + 1
+    doc.chart_tsp_y_max = doc.tsp_1200s + 1
+    doc.chart_transmittance_y_max = 100
     doc.save()
     
     return { 'output': 'Raw data imported and calculated' }
