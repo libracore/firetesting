@@ -104,9 +104,9 @@ function convert_raw_data(frm, raw) {
         callback: function(r) {
             if (r.message) {
                 frappe.show_alert(r.message.output);
-                refresh_field('raw_time','raw_transmittance', 'raw_temperature',
+                refresh_field(['raw_time', 'raw_transmittance', 'raw_temperature',
                     'min_transmittance', 'starting_temperature', 'maximum_temperature',
-                    'end_time');
+                    'end_time']);
             }
         }
     });

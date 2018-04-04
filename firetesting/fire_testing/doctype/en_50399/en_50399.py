@@ -312,10 +312,29 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
         i0 = i0 + float(fields[column_config['transmission']])
     i0 = i0 / 20
     
+    # determine slope correction factor (xO2 = m*t + xO2)
+    slope_correction_factor = 0
+    dt = float((len(raw_lines) - 1) - start_line_index)
+    fields = raw_lines[start_line_index].split(',')
+    x_o_0 = float(fields[column_config['o2']])
+    for i in range((len(raw_lines) - 1), 0, -1):
+        fields = raw_lines[i].split(',')
+        if len(fields) > 10:
+            try:
+                x_o_end = float(fields[column_config['o2']])
+                continue
+            except:
+                pass
+    #fields = raw_lines[-1].split(',')
+    #x_o_end = float(fields[column_config['o2']])
+    dx = x_o_end - x_o_0
+    slope_correction_factor = float(dx / dt)
+        
     # store output to document
     doc.logger_data = lines
     doc.i0 = i0
     doc.raw_data_cutoff = start_line_index
+    doc.slope_correction_factor = slope_correction_factor
     doc.save()
     
     # compute results
@@ -422,7 +441,9 @@ def calculate_results(doc_name):
             _v = 22.4 * (A * kt / kp) * math.sqrt(_diff)
             V.append(_v)
             x_CO2 = (float(fields[column_config['co2']])) / 100
-            x_O2 = (float(fields[column_config['o2']])) / 100
+            # include slope correction for O2 drift
+            #x_O2 = (float(fields[column_config['o2']])) / 100
+            x_O2 = ((float(fields[column_config['o2']])) - ((i - 2) * doc.slope_correction_factor)) / 100
             _oxy_dep = (x_0_O2 * (1 - x_CO2) - x_O2 * (1 - x_0_CO2)) / (x_0_O2 * (1 - x_O2 - x_CO2))
             oxy_depletion.append(_oxy_dep)
             # heat release
@@ -534,14 +555,17 @@ def calculate_results(doc_name):
         doc.flame_spread = float(doc.damage_zone_back) / 100.0
               
     # compute classification
-    if doc.flame_spread <= 1.5 and doc.thr_1200s <= 15 and doc.peak_hrr <= 30 and doc.figra <= 150:
-        class_general = "B2 ca"
-    elif doc.flame_spread <= 2 and doc.thr_1200s <= 30 and doc.peak_hrr <= 60 and doc.figra <= 300:
-        class_general = "C ca"
-    elif doc.thr_1200s <= 70 and doc.peak_hrr <= 400 and doc.figra <= 1300:
-        class_general = "D ca"
-    else:
+    if doc.early_termination:
         class_general = "nc"
+    else:
+        if doc.flame_spread <= 1.5 and doc.thr_1200s <= 15 and doc.peak_hrr <= 30 and doc.figra <= 150:
+            class_general = "B2 ca"
+        elif doc.flame_spread <= 2 and doc.thr_1200s <= 30 and doc.peak_hrr <= 60 and doc.figra <= 300:
+            class_general = "C ca"
+        elif doc.thr_1200s <= 70 and doc.peak_hrr <= 400 and doc.figra <= 1300:
+            class_general = "D ca"
+        else:
+            class_general = "nc"
     if doc.peak_spr <= 0.25 and doc.tsp_1200s <= 50:
         class_smoke = "s1"
     elif doc.peak_spr <= 1.5 and doc.tsp_1200s <= 400:
@@ -585,7 +609,11 @@ def calculate_results(doc_name):
     doc.class_general = class_general
     doc.class_smoke = class_smoke
     doc.class_dripping = class_dripping
-    
+    doc.chart_hrr_y_max = peak_hrr + 1
+    doc.chart_thr_y_max = doc.thr_1200s + 1
+    doc.chart_spr_y_max = peak_spr + 1
+    doc.chart_tsp_y_max = doc.tsp_1200s + 1
+    doc.chart_transmittance_y_max = 100
     doc.save()
     
     return { 'output': 'Raw data imported and calculated' }
