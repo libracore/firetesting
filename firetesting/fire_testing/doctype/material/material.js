@@ -20,7 +20,7 @@ frappe.ui.form.on('Material', {
         
 	    if (frm.doc.__islocal) {
 		// in case of creating from crono, load customer
-		if (frm.doc.crono != "") {
+		if ((frm.doc.crono) && (frm.doc.crono != "")) {
 		    frappe.call({
 			    "method": "frappe.client.get",
 			    "args": {
