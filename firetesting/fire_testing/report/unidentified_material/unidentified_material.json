@@ -8,14 +8,15 @@
  "idx": 0, 
  "is_standard": "Yes", 
  "json": "{\"add_total_row\": 0, \"sort_by\": \"Material.modified\", \"add_totals_row\": 0, \"sort_order\": \"desc\", \"sort_by_next\": null, \"filters\": [[\"Material\", \"crono\", \"not like\", \"%CRONO%\"], [\"Material\", \"type\", \"!=\", \"Component\"]], \"sort_order_next\": \"desc\", \"columns\": [[\"name\", \"Material\"], [\"material_code\", \"Material\"], [\"customer\", \"Material\"], [\"description\", \"Material\"], [\"crono\", \"Material\"]]}", 
- "modified": "2018-02-15 15:34:38.424495", 
+ "modified": "2018-04-14 23:37:13.173584", 
  "modified_by": "Administrator", 
  "module": "Fire Testing", 
  "name": "Unidentified material", 
  "owner": "Administrator", 
+ "query": "SELECT \n  `name` AS `Material:Link/Material:100`, \n  `material_code` AS `Article number::100`, \n  `customer` AS `Customer:Link/Customer:200`, \n  `description` AS `Description::200` \nFROM `tabMaterial` \nWHERE `name` NOT IN \n  (SELECT `material` FROM `tabCrono` WHERE `material` IS NOT NULL)", 
  "ref_doctype": "Material", 
  "report_name": "Unidentified material", 
- "report_type": "Report Builder", 
+ "report_type": "Query Report", 
  "roles": [
   {
    "role": "System Manager"
