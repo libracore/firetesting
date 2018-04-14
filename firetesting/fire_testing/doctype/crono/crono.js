@@ -3,34 +3,42 @@
 
 frappe.ui.form.on('Crono', {
 	refresh: function(frm) {
-		//Filter for sales_order based on customer link field
-		cur_frm.fields_dict['sales_order'].get_query = function(doc) {
-			return {
-				filters: {
-					"customer": frm.doc.customer
-				}
-			}
-		};
-        cur_frm.fields_dict['classification'].get_query = function(doc) {
-            return {
-                filters: {
-                    "customer": frm.doc.customer
-                }
-            }
-        };
-        
-        // provide lock & unlock for system manager and crono manager
-        if ((frappe.user.has_role("System Manager")) || (frappe.user.has_role("Crono Manager"))) {
-            if(frm.doc.docstatus==0) {
-            frm.add_custom_button(__("Lock"), function() {
-                    lock(frm);
-                });
-            } else {
-            frm.add_custom_button(__("Unlock"), function() {
-                    unlock(frm);
-                });
-            }
-        }
+	    //Filter for sales_order based on customer link field
+	    cur_frm.fields_dict['sales_order'].get_query = function(doc) {
+		    return {
+			    filters: {
+				    "customer": frm.doc.customer
+			    }
+		    }
+	    };
+	    cur_frm.fields_dict['classification'].get_query = function(doc) {
+		return {
+		    filters: {
+			"customer": frm.doc.customer
+		    }
+		}
+	    };
+	    cur_frm.fields_dict['material'].get_query = function(doc) {
+		return {
+		    filters: {
+			"customer": frm.doc.customer,
+			"type": ["!=", "Component"]
+		    }
+		}
+	    };
+	            
+	    // provide lock & unlock for system manager and crono manager
+	    if ((frappe.user.has_role("System Manager")) || (frappe.user.has_role("Crono Manager"))) {
+		if(frm.doc.docstatus==0) {
+		frm.add_custom_button(__("Lock"), function() {
+			lock(frm);
+		    });
+		} else {
+		frm.add_custom_button(__("Unlock"), function() {
+			unlock(frm);
+		    });
+		}
+	    }
 	},
 	setup: function(frm) {
 		if ((frm.doc.sales_order != null) && (frm.doc.sales_order != 'select')) {
