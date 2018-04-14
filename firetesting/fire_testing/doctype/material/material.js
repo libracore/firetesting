@@ -15,7 +15,8 @@ frappe.ui.form.on('Material', {
 		function() {
 			return {
 				filters: {
-					"type": "Component"
+					"type": "Component",
+					"customer": frm.doc.customer
 				}
 			}
 		};  
