@@ -39,49 +39,55 @@ frappe.ui.form.on('Crono', {
 		    });
 		}
 	    }
-	},
-	setup: function(frm) {
+	    
+	    // check if this is a new document
+	    if (frm.doc.__islocal) {
 		if ((frm.doc.sales_order != null) && (frm.doc.sales_order != 'select')) {
 			// in case of creating from sales order
 			frappe.call({
-                "method": "frappe.client.get",
-                "args": {
-                    "doctype": "Sales Order",
-                    "name": frm.doc.sales_order
-                },
-                "callback": function(response) {
-                    var so = response.message;
-                    if (so) {
-                            frm.set_value('customer', so.customer);
-                    } else {
-                            frappe.msgprint("Sales order not found");
-                    }
-                }
-            });
+			    "method": "frappe.client.get",
+			    "args": {
+				"doctype": "Sales Order",
+				"name": frm.doc.sales_order
+			    },
+			    "callback": function(response) {
+				var so = response.message;
+				if (so) {
+					frm.set_value('customer', so.customer);
+					console.log(so);
+					frm.set_value('sample_name', so.material);
+					frm.set_value('test_methods', so.test_methods);
+				} else {
+					frappe.msgprint("Sales order not found");
+				}
+			    }
+			});
 		}
 		else if ((frm.doc.classification != null) && (frm.doc.classification != 'select')) {
 			// in case of creating from classification
 			frappe.call({
-                "method": "frappe.client.get",
-                "args": {
-                    "doctype": "Classification",
-                    "name": frm.doc.classification
-                },
-                "callback": function(response) {
-                    var classification = response.message;
-                    if (classification) {
-                        frm.set_value('customer', classification.customer);
-                        frm.set_value('sales_order', classification.sales_order);
-                    } else {
-                            frappe.msgprint("Sales order not found");
-                    }
-                }
-            });
+			    "method": "frappe.client.get",
+			    "args": {
+				"doctype": "Classification",
+				"name": frm.doc.classification
+			    },
+			    "callback": function(response) {
+				var classification = response.message;
+				if (classification) {
+				    frm.set_value('customer', classification.customer);
+				    frm.set_value('sales_order', classification.sales_order);
+				} else {
+					frappe.msgprint("Classification not found");
+				}
+			    }
+			});
 		}
+	    }
 	},
 	sales_order: function(frm) {
-		//cur_frm.add_fetch('sales_order','material','material');
+		cur_frm.add_fetch('sales_order','material','sample_name'); 
 		cur_frm.add_fetch('sales_order','customer','customer');
+		cur_frm.add_fetch('sales_order','test_methods','test_methods'); 
 	},
 	classification: function(frm) {
 		// classification has changed, fetch sales order and customer

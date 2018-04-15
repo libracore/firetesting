@@ -15,10 +15,18 @@ frappe.ui.form.on('Material', {
 		function() {
 			return {
 				filters: {
-					"type": "Component"
+					"type": "Component",
+					"customer": frm.doc.customer
 				}
 			}
 		};  
+	},
+	validate: function(frm) {
+	    // check if material type is set
+	    if ((frm.doc.type == null) || (frm.doc.type == "")) {
+		frappe.msgprint( __("Please set a material type"), __("Validation") );
+		frappe.validated=false;
+	    }
 	}
 });
 
