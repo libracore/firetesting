@@ -20,6 +20,13 @@ frappe.ui.form.on('Material', {
 				}
 			}
 		};  
+	},
+	validate: function(frm) {
+	    // check if material type is set
+	    if ((frm.doc.type == null) || (frm.doc.type == "")) {
+		frappe.msgprint( __("Please set a material type"), __("Validation") );
+		frappe.validated=false;
+	    }
 	}
 });
 
