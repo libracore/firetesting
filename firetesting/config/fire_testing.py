@@ -94,6 +94,7 @@ def get_data():
 					"name": "Unidentified material",
 					"label": _("Unidentified material"),
 					"description": _("Unidentified material"),
+					"is_query_report": True
 				},
 				{
 					"type": "report",
@@ -101,6 +102,7 @@ def get_data():
 					"name": "Incomplete material",
 					"label": _("Incomplete material"),
 					"description": _("Incomplete material"),
+					"is_query_report": True
 				},
 				{
 					"type": "report",

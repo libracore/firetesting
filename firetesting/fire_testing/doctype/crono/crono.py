@@ -21,10 +21,9 @@ def unlock(doc):
 
 @frappe.whitelist()
 def get_material(doc):
-    sql_query = "SELECT `name` FROM `tabMaterial` WHERE `crono` = '{0}' LIMIT 1".format(doc)
-    material_name = frappe.db.sql(sql_query, as_dict=True)
+    material_name = frappe.get_value("Crono", doc, 'material')
     if material_name:
-        return { 'material_name': material_name[0].name }
+        return { 'material_name': material_name }
     else:
         return { 'material_name': "no material defined!" }
 
