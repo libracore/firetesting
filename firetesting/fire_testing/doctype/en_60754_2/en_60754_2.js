@@ -81,7 +81,8 @@ function fetch_components(frm) {
             "doctype": "Material Component", 
             "filters": {"parent": frm.doc.material},
             "fields": ["material_code", "mass"],
-            "order_by": "idx"
+            "order_by": "idx",
+            "parent": "Material"
          },
          "callback": function(r) {
                 if (r.message != null) {
