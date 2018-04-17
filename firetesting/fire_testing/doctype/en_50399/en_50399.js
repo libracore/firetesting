@@ -23,8 +23,7 @@ frappe.ui.form.on('EN 50399', {
             // set mounting parameters
             set_mounting(frm);
         });
-	},
-    onload: function(frm) { 
+
         // check if this is a new entry
         if (frm.doc.__islocal) {
             // create title based on crono

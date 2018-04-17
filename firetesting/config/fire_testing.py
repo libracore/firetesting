@@ -81,6 +81,12 @@ def get_data():
 					"name": "EXAP calculation",
 					"label": _("EXAP calculation"),
 					"description": _("EXAP calculation")
+				},
+				{
+					"type": "doctype",
+					"name": "Crono Verification",
+					"label": _("Crono Verification"),
+					"description": _("Crono Verification")
 				}
 			]
 		},
