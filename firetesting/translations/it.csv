@@ -1,0 +1,28 @@
+DocType: Crono Verification,Crono Verification,Verifica Crono
+DocType: Crono Verification,Date of test request,Data di arrivo della richiesta della prova
+DocType: Crono Verification,Date of material arrival,Data di arrivo del materiale
+DocType: Crono Verification,Material inspection date,Data di controllo del materiale
+DocType: Crono Verification,Operator performing the inspection,Operatore che effettua il controllo
+DocType: Crono Verification,Circular cable,Cavo circolare
+DocType: Crono Verification,Declared cable diameter (mm),Diametro cavo dichiarato (mm)
+DocType: Crono Verification,Measured cable diameter (mm),Diametro cavo misurato (mm)
+DocType: Crono Verification,Measured cable perimeter (mm),Perimetro cavo misurato (mm)
+DocType: Crono Verification,(in case of irregular shape),(in caso di forma irregolare) 
+DocType: Crono Verification,Non-circular cable,Cavo non-circolare
+DocType: Crono Verification,Major axis cable (mm),Asse maggiore cavo (mm)
+DocType: Crono Verification,Minor axis cable (mm),Asse minore cavo (mm)
+DocType: Crono Verification,Is the cable part of the case when the standard defines the assembly?,Il cavo rientra nei casi in cui la norma definisce il montaggio?
+DocType: Crono Verification,Major axis measured cable (mm),Asse maggiore cavo misurato (mm)
+DocType: Crono Verification,Minor axis measured cable (mm),Asse minore cavo misurato (mm)
+DocType: Crono Verification,Preliminary information,Informazioni preliminari 
+DocType: Crono Verification,Number of combustible components,Numero componenti combustibili
+DocType: Crono Verification,Amount of cable required (m),Quantità di cavo richiesta (m)
+DocType: Crono Verification,Cable name,Nome cavo
+DocType: Crono Verification,Article code,Codice articolo
+DocType: Crono Verification,Lot number of the cable (batch),N° di lotto del cavo (batch)
+DocType: Crono Verification,Color,Colore
+DocType: Crono Verification,Number of non-combustible components,Numero componenti non combustibili
+DocType: Crono Verification,Amount of cable arrived (m),Quantità di cavo arrivata (m)
+DocType: Crono Verification,Heading printed on the cable,Dicitura stampigliata sul cavo
+DocType: Crono Verification,Article code (if different),Codice articolo (se diverso)
+DocType: Crono Verification,Lot number of the cable (batch) (if different),N° di lotto del cavo (batch) (se diverso)
