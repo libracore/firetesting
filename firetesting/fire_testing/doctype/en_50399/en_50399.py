@@ -278,7 +278,7 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
     # find start point: where burner output > 15 kW
     for i in range(1, len(raw_lines) - 1):
         fields = raw_lines[i].split(',')
-        if float(fields[column_config['burner_output']]) > 15:
+        if float(fields[column_config['burner_output']]) > 5:
             start_line_index = i
             break
     
