@@ -411,13 +411,9 @@ def calculate_results(doc_name):
     oxy_depletion = []                              # oxygen depletion factor [-]
     q = []                                          # heat release [kW]
     thr = []                                        # total heat release [MJ]
-    peak_hrr = 0.0                                  # peak heat release [kW]
-    peak_hrr_time = 0                               # time of hrr peak [s]
     k = []											# smoke production extinction coefficient
     spr = []                                        # smoke production
     tsp = []                                        # total smoke production [m2]
-    peak_spr = 0.0                                  # peak smoke production [m2/s]
-    peak_spr_time = 0                               # time of smoke production peak
     for i in range(2, len(lines)):
         fields = lines[i].split(',')
         if len(fields) > 1:
@@ -456,9 +452,6 @@ def calculate_results(doc_name):
             else:
                 _thr = thr[-1] + (3 * _q / 1000)
             thr.append(_thr)
-            if _q > peak_hrr:
-                peak_hrr = _q           # update peak_hrr
-                peak_hrr_time = _time
             # smoke production
             _k = (1 / d) * math.log(i0 / _transmission)
             k.append(_k)
@@ -472,14 +465,13 @@ def calculate_results(doc_name):
             else:
                 _tsp = tsp[-1] + 3 * _spr
             tsp.append(_tsp)
-            if _spr > peak_spr:
-                peak_spr = _spr
-                peak_spr_time = _time
 
     # compute floating averages and FIGRA
-    hrr_av = []                                 # in kW
-    figra = []                                  # in W/s
-    figra_max = 0.0                             # in W/s
+    hrr_av = []                                     # in kW
+    figra = []                                      # in W/s
+    figra_max = 0.0                                 # in W/s
+    peak_hrr = 0.0                                  # peak heat release [kW]
+    peak_hrr_time = 0                               # time of hrr peak [s]
     for i in range(0,len(time)):
         # hrr_av from symmetrical average (see EN 50399 G.1)
         if time[i] == 0:                        # t = 0 sec
@@ -513,9 +505,15 @@ def calculate_results(doc_name):
         figra.append(_figra)
         if _figra > figra_max:                  # check maximal figra
             figra_max = _figra
+        # find peak hrr
+        if q[i] > peak_hrr:
+            peak_hrr = q[i]                     # update peak_hrr
+            peak_hrr_time = time[i]
     
     # compute floating average on spr and apply for peak_spr and tsp
     spr_av = []                                     # average smoke production
+    peak_spr = 0.0                                  # peak smoke production [m2/s]
+    peak_spr_time = 0                               # time of smoke production peak
     for i in range(0,len(time)):  
         # hrr_av from symmetrical average (see EN 50399 G.1)
         if time[i] == 0:                            # t = 0 sec
@@ -530,7 +528,10 @@ def calculate_results(doc_name):
         else:
             _spr_av = (0.5 * spr[i-10] + sum(spr[(i-9):(i+10)]) + 0.5 * spr[i+10]) / 20
         spr_av.append(_spr_av)
-        
+        # find peak spr
+        if spr[i] > peak_spr:
+            peak_spr = spr[i]
+            peak_spr_time = time[i]
 
     
     trace = trace + "time: {0}\n".format(time)
