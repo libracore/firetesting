@@ -415,9 +415,6 @@ def calculate_results(doc_name):
     peak_hrr_time = 0                               # time of hrr peak [s]
     k = []											# smoke production extinction coefficient
     spr = []                                        # smoke production
-    tsp = []                                        # total smoke production [m2]
-    peak_spr = 0.0                                  # peak smoke production [m2/s]
-    peak_spr_time = 0                               # time of smoke production peak
     for i in range(2, len(lines)):
         fields = lines[i].split(',')
         if len(fields) > 1:
@@ -466,14 +463,7 @@ def calculate_results(doc_name):
             if _spr < 0:
                 _spr = 0                # prevent negative smoke production
             spr.append(_spr)
-            if len(tsp) == 0:           # define current TSP
-                _tsp = 3 * _spr
-            else:
-                _tsp = tsp[-1] + 3 * _spr
-            tsp.append(_tsp)
-            if _spr > peak_spr:
-                peak_spr = _spr
-                peak_spr_time = _time
+
 
     # compute floating averages and FIGRA
     hrr_av = []                                 # in kW
@@ -512,7 +502,35 @@ def calculate_results(doc_name):
         figra.append(_figra)
         if _figra > figra_max:                  # check maximal figra
             figra_max = _figra
-
+    
+    # compute floating average on spr and apply for peak_spr and tsp
+    spr_av = []                                     # average smoke production
+    tsp = []                                        # total smoke production [m2]
+    peak_spr = 0.0                                  # peak smoke production [m2/s]
+    peak_spr_time = 0                               # time of smoke production peak
+    for i in range(0,len(time)):  
+        # hrr_av from symmetrical average (see EN 50399 G.1)
+        if time[i] == 0:                            # t = 0 sec
+            _spr_av = 0
+        elif time[i] < 30:                          # t = 3 .. 27 sec
+            _spr_av = sum(q[0:((i*2)+1)]) / ((i*2)+1)
+        elif time[i] == 1200:                       # t = 1200 sec
+            _spr_av = q[i]
+        elif time[i] > 1170:                        # t = 1173 .. 1197 sec (i = 391 .. 399)
+            _values_count = (((400 - i) * 2) + 1)
+            _spr_av = sum(q[(400 - _values_count)) / _values_count
+        spr_av.append(_spr_av)
+        
+        # compute related tsp and peak_spr  
+        if len(tsp) == 0:           # define current TSP
+            _tsp = 3 * _spr_av
+        else:
+            _tsp = tsp[-1] + 3 * _spr_av
+        tsp.append(_tsp)
+        if _spr_av > peak_spr:
+            peak_spr = _spr_av
+            peak_spr_time = time[i]
+    
     trace = trace + "time: {0}\n".format(time)
     trace = trace + "dp: {0}\n".format(dp)
     trace = trace + "trsm: {0}\n".format(transmission)
@@ -522,6 +540,7 @@ def calculate_results(doc_name):
     trace = trace + "k: {0}\n".format(k)
     trace = trace + "spr: {0}\n".format(spr)
     trace = trace + "hrr_av: {0}\n".format(hrr_av)    
+    trace = trace + "spr_av: {0}\n".format(spr_av)    
     trace = trace + "figra: {0}\n".format(figra)    
     trace = trace + "Peak HRR: {0} ({4} sec), THR: {1}, Peak SPR: {2} ({5} sec), TSP: {3}\n".format(
         peak_hrr, thr[-1], peak_spr, tsp[-1], peak_hrr_time, peak_spr_time)
@@ -538,7 +557,7 @@ def calculate_results(doc_name):
         transmission_data_str = transmission_data_str + "{0:.3f},".format(transmission[i])
         hrr_data_str = hrr_data_str + "{0:.3f},".format(hrr_av[i])
         thr_data_str = thr_data_str + "{0:.3f},".format(thr[i])
-        spr_data_str = spr_data_str + "{0:.3f},".format(spr[i])
+        spr_data_str = spr_data_str + "{0:.3f},".format(spr_av[i])
         tsp_data_str = tsp_data_str + "{0:.3f},".format(tsp[i])
 
     time_data_str = time_data_str[:-1]          # remove trailing comma
