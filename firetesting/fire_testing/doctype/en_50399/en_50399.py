@@ -267,37 +267,110 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
         'co2': 9,
         'amb_t': -1,
         't_duct_1': 2,
-        't_duct_2': 3,
-        't_duct_3': -1,
+        't_duct_2': -1,
+        't_duct_3': 3,
         'co': 10,
         'apt': -1,
         'air_mfm': -1,
         'pdm': -1,
         'pdc': -1
     }
-    # find start point: where burner output > 15 kW
-    for i in range(1, len(raw_lines) - 1):
+    # find baselines over first 10 readings (30 seconds)
+    baseline_q   = 0.0
+    baseline_o2  = 0.0
+    baseline_co2 = 0.0
+    baseline_t   = 0.0
+    for i in range(1, 11):
         fields = raw_lines[i].split(',')
-        if float(fields[column_config['burner_output']]) > 5:
-            start_line_index = i
-            break
+        baseline_q   += float(fields[column_config['burner_output']])
+        baseline_o2  += float(fields[column_config['o2']])
+        baseline_co2 += float(fields[column_config['co2']])
+        baseline_t   += float(fields[column_config['t_duct_1']])
+    baseline_q   = baseline_q / 10
+    baseline_o2  = baseline_o2 / 10
+    baseline_co2 = baseline_co2 / 10
+    baseline_t   = baseline_t / 10
+                 
+    # find start point
+    start_line_index_q = 0
+    start_line_index_o2 = 0
+    start_line_index_co2 = 0
+    start_line_index_t = 0
+    for i in range(10, len(raw_lines) - 1):
+        fields = raw_lines[i].split(',')
+        if start_line_index_q == 0:
+            # burner increases >= 5 kW above threshold
+            if float(fields[column_config['burner_output']]) >= (baseline_q + 5):
+                start_line_index_q = i
+        if start_line_index_o2 == 0:
+            # O2 level increases <= 0.05%  above threshold
+            if float(fields[column_config['o2']]) <= (0.9995 * baseline_o2):
+                start_line_index_o2 = i
+        if start_line_index_co2 == 0:
+            # CO2 level increases >= 0.02% above threshold
+            if float(fields[column_config['co2']]) >= (1.0002 * baseline_co2):
+                start_line_index_co2 = i
+        if start_line_index_t == 0:
+            # temperature increases > 3 K above threshold
+            if float(fields[column_config['t_duct_1']]) >= (baseline_t + 3):
+                start_line_index_t = i
+    # make sure all start_indexes are set
+    if start_line_index_q == 0:
+        start_line_index_q = 1
+        frappe.log_error("{0}: auto-detection of burner (q) failed. Fallback to row 1".format(doc_name))
+    if start_line_index_o2 == 0:
+        start_line_index_o2 = start_line_index_q
+        frappe.log_error("{0}: auto-detection of O2 failed. Fallback to burner".format(doc_name))
+    if start_line_index_co2 == 0:
+        start_line_index_co2 = start_line_index_q
+        frappe.log_error("{0}: auto-detection of CO2 failed. Fallback to burner".format(doc_name))
+    if start_line_index_t == 0:
+        start_line_index_t = start_line_index_q
+        frappe.log_error("{0}: auto-detection of temperature failed. Fallback to burner".format(doc_name))
+    #frappe.log_error("Index q,o2,co2,t: {0},{1},{2},{3}".format(start_line_index_q,start_line_index_o2,start_line_index_co2,start_line_index_t))
     
     # compile the data vectors
+    # group 1: q burner
+    gas_mfm = []
+    for i in range(0, (1200/3) + 1):
+        fields = raw_lines[start_line_index_q + i].split(',')
+        gas_mfm.append(fields[column_config['gas_mfm']])                # 1 - Gas MFM [mg/s]
+    # group 2: O2 level
+    o2 = []
+    for i in range(0, (1200/3) + 1):
+        fields = raw_lines[start_line_index_o2 + i].split(',')
+        o2.append(fields[column_config['o2']])                          # 4 - O2 [%]
+    # group 3: CO2 level
+    co2 = []
+    dpt = []
+    for i in range(0, (1200/3) + 1):
+        fields = raw_lines[start_line_index_co2 + i].split(',')
+        co2.append(fields[column_config['co2']])                        # 5 - CO2 [%]
+        dpt.append(fields[column_config['dpt']])                        # 2 - DPT (deltaP) [Pa]
+    # group 4: temperature
+    transmittance = []
+    t_duct_1 = []
+    t_duct_3 = []
+    for i in range(0, (1200/3) + 1):
+        fields = raw_lines[start_line_index_co2 + i].split(',')
+        transmittance.append(fields[column_config['transmission']])     # 3 - Transmittance [%]
+        t_duct_1.append(kelvin(float(fields[column_config['t_duct_1']]))) # 7 - T (duct, 1) [K]
+        t_duct_3.append(kelvin(float(fields[column_config['t_duct_3']]))) # 9 - T (duct, 3) [K]
+    # compile matrix
     lines = "time (s),Gas MFM (mg/s),DPT (Pa),Transmission (%),O2 (%),CO2 (%),Amb T (K),T_Duct1 (K),T_Duct2 (K),T_Duct3 (K),CO (%),APT (kPa),Air MFM (mg/s),PDM (-),PDC (-)\n"
     lines = lines + "\n"
     for i in range(0, (1200/3) + 1):
-        fields = raw_lines[start_line_index + i].split(',')
-        lines = lines + "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}\n".format(
+        lines += "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}\n".format(
             3 * i,                                              # 0 - time [sec]
-            fields[column_config['gas_mfm']],                   # 1 - Gas MFM [mg/s]
-            fields[column_config['dpt']],                       # 2 - DPT (deltaP) [Pa]
-            fields[column_config['transmission']],              # 3 - Transmission [%]
-            fields[column_config['o2']],                        # 4 - O2 [%]
-            fields[column_config['co2']],                       # 5 - CO2 [%]
+            gas_mfm[i],                                         # 1 - Gas MFM [mg/s]
+            dpt[i],                                             # 2 - DPT (deltaP) [Pa]
+            transmittance[i],                                   # 3 - Transmission [%]
+            o2[i],                                              # 4 - O2 [%]
+            co2[i],                                             # 5 - CO2 [%]
             kelvin(float(env_T)),                               # 6 - T (ambient) [K]
-            kelvin(float(fields[column_config['t_duct_1']])),   # 7 - T (duct, 1) [K]
-            kelvin(float(fields[column_config['t_duct_2']])),   # 8 - T (duct, 2) [K]
-            -1,                           						# 9 - T (duct, 3) [K]
+            t_duct_1[i],                                        # 7 - T (duct, 1) [K]
+            -1,                                                 # 8 - T (duct, 2) [K]
+            t_duct_3[i],                                        # 9 - T (duct, 3) [K]
             (float(column_config['co']) / 100000),              # 10- CO [%]                                                                                                
             (float(env_P) / 1000),                              # 11- P (ambient) [kPa]
             -1,                                                 # 12- Air MFM [mg/s]
@@ -314,9 +387,7 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
     
     # determine slope correction factor (xO2 = m*t + xO2)
     slope_correction_factor = 0
-    dt = float((len(raw_lines) - 1) - start_line_index)
-    fields = raw_lines[start_line_index].split(',')
-    x_o_0 = float(fields[column_config['o2']])
+    dt = float((len(raw_lines) - 1) - start_line_index_q)
     for i in range((len(raw_lines) - 1), 0, -1):
         fields = raw_lines[i].split(',')
         if len(fields) > 10:
@@ -327,13 +398,15 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
                 pass
     #fields = raw_lines[-1].split(',')
     #x_o_end = float(fields[column_config['o2']])
-    dx = x_o_end - x_o_0
+    dx = x_o_end - baseline_o2
     slope_correction_factor = float(dx / dt)
+    #frappe.log_error(lines)
         
     # store output to document
     doc.logger_data = lines
     doc.i0 = i0
-    doc.raw_data_cutoff = start_line_index
+    doc.raw_baseline = "{0},{1},{2},{3}".format(baseline_q, baseline_o2, baseline_co2, baseline_t)
+    doc.raw_shift = "{0},{1},{2},{3}".format(start_line_index_q, start_line_index_o2, start_line_index_co2, start_line_index_t)
     doc.slope_correction_factor = slope_correction_factor
     doc.save()
     
@@ -421,8 +494,8 @@ def calculate_results(doc_name):
             time.append(_time)
             _dp = float(fields[column_config['dpt']])
             dp.append(_dp)
-            _t_gas = (float(fields[column_config['t_duct_2']]) + 
-                float(fields[column_config['t_duct_2']])) / 2.0
+            _t_gas = (float(fields[column_config['t_duct_1']]) + 
+                float(fields[column_config['t_duct_3']])) / 2.0
             t_gas.append(_t_gas)
             # transmission
             _transmission = float(fields[column_config['transmission']])
