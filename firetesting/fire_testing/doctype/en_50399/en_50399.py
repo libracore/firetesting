@@ -513,12 +513,12 @@ def calculate_results(doc_name):
         if time[i] == 0:                            # t = 0 sec
             _spr_av = 0
         elif time[i] < 30:                          # t = 3 .. 27 sec
-            _spr_av = sum(q[0:((i*2)+1)]) / ((i*2)+1)
+            _spr_av = sum(q[:((i*2)+1)]) / ((i*2)+1)
         elif time[i] == 1200:                       # t = 1200 sec
             _spr_av = q[i]
         elif time[i] > 1170:                        # t = 1173 .. 1197 sec (i = 391 .. 399)
             _values_count = (((400 - i) * 2) + 1)
-            _spr_av = sum(q[(400 - _values_count)) / _values_count
+            _spr_av = sum(q[(400 - _values_count):]) / _values_count
         spr_av.append(_spr_av)
         
         # compute related tsp and peak_spr  
