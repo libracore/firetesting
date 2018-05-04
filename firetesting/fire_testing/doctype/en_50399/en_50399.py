@@ -223,9 +223,13 @@ def get_normed_date(date):
     env_rh: environmental relative humidity, in %
 """
 @frappe.whitelist()
-def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
+def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50,ignore_individual_shifts=False):
     # get parent document
     doc = frappe.get_doc("EN 50399", doc_name)
+    if ignore_individual_shifts == "0":
+        ignore_individual_shifts = False
+    elif ignore_individual_shifts == "1":
+        ignore_individual_shifts = True
     
     # prepare input data
     raw_lines = raw.split('\n')
@@ -300,20 +304,32 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
         fields = raw_lines[i].split(',')
         if start_line_index_q == 0:
             # burner increases >= 5 kW above threshold
-            if float(fields[column_config['burner_output']]) >= (baseline_q + 5):
-                start_line_index_q = i
+            try:
+                if float(fields[column_config['burner_output']]) >= (baseline_q + 5):
+                    start_line_index_q = i
+            except:
+                frappe.log_error("EN 50399 {0}: float(fields[column_config['burner_output']]) not found in line {1}".format(doc_name, i))                      
         if start_line_index_o2 == 0:
             # O2 level increases <= 0.05%  above threshold
-            if float(fields[column_config['o2']]) <= (0.9995 * baseline_o2):
-                start_line_index_o2 = i
+            try:
+                if float(fields[column_config['o2']]) <= (0.9995 * baseline_o2):
+                    start_line_index_o2 = i
+            except:
+                frappe.log_error("EN 50399 {0}: float(fields[column_config['o2']]) not found in line {1}".format(doc_name, i))                      
         if start_line_index_co2 == 0:
             # CO2 level increases >= 0.02% above threshold
-            if float(fields[column_config['co2']]) >= (1.0002 * baseline_co2):
-                start_line_index_co2 = i
+            try:
+                if float(fields[column_config['co2']]) >= (1.0002 * baseline_co2):
+                    start_line_index_co2 = i
+            except:
+                frappe.log_error("EN 50399 {0}: float(fields[column_config['co2']]) not found in line {1}".format(doc_name, i))                    
         if start_line_index_t == 0:
             # temperature increases > 3 K above threshold
-            if float(fields[column_config['t_duct_1']]) >= (baseline_t + 3):
-                start_line_index_t = i
+            try:
+                if float(fields[column_config['t_duct_1']]) >= (baseline_t + 3):
+                    start_line_index_t = i
+            except:
+                frappe.log_error("EN 50399 {0}: float(fields[column_config['t_duct_1']]) not found in line {1}".format(doc_name, i))
     # make sure all start_indexes are set
     if start_line_index_q == 0:
         start_line_index_q = 1
@@ -329,55 +345,65 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50):
         frappe.log_error("{0}: auto-detection of temperature failed. Fallback to burner".format(doc_name))
     #frappe.log_error("Index q,o2,co2,t: {0},{1},{2},{3}".format(start_line_index_q,start_line_index_o2,start_line_index_co2,start_line_index_t))
     
-    # compile the data vectors
-    # group 1: q burner
-    gas_mfm = []
-    for i in range(0, (1200/3) + 1):
-        fields = raw_lines[start_line_index_q + i].split(',')
-        gas_mfm.append(fields[column_config['gas_mfm']])                # 1 - Gas MFM [mg/s]
-    # group 2: O2 level
-    o2 = []
-    for i in range(0, (1200/3) + 1):
-        fields = raw_lines[start_line_index_o2 + i].split(',')
-        o2.append(fields[column_config['o2']])                          # 4 - O2 [%]
-    # group 3: CO2 level
-    co2 = []
-    dpt = []
-    for i in range(0, (1200/3) + 1):
-        fields = raw_lines[start_line_index_co2 + i].split(',')
-        co2.append(fields[column_config['co2']])                        # 5 - CO2 [%]
-        dpt.append(fields[column_config['dpt']])                        # 2 - DPT (deltaP) [Pa]
-    # group 4: temperature
-    transmittance = []
-    t_duct_1 = []
-    t_duct_3 = []
-    for i in range(0, (1200/3) + 1):
-        fields = raw_lines[start_line_index_co2 + i].split(',')
-        transmittance.append(fields[column_config['transmission']])     # 3 - Transmittance [%]
-        t_duct_1.append(kelvin(float(fields[column_config['t_duct_1']]))) # 7 - T (duct, 1) [K]
-        t_duct_3.append(kelvin(float(fields[column_config['t_duct_3']]))) # 9 - T (duct, 3) [K]
-    # compile matrix
-    lines = "time (s),Gas MFM (mg/s),DPT (Pa),Transmission (%),O2 (%),CO2 (%),Amb T (K),T_Duct1 (K),T_Duct2 (K),T_Duct3 (K),CO (%),APT (kPa),Air MFM (mg/s),PDM (-),PDC (-)\n"
-    lines = lines + "\n"
-    for i in range(0, (1200/3) + 1):
-        lines += "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}\n".format(
-            3 * i,                                              # 0 - time [sec]
-            gas_mfm[i],                                         # 1 - Gas MFM [mg/s]
-            dpt[i],                                             # 2 - DPT (deltaP) [Pa]
-            transmittance[i],                                   # 3 - Transmission [%]
-            o2[i],                                              # 4 - O2 [%]
-            co2[i],                                             # 5 - CO2 [%]
-            kelvin(float(env_T)),                               # 6 - T (ambient) [K]
-            t_duct_1[i],                                        # 7 - T (duct, 1) [K]
-            -1,                                                 # 8 - T (duct, 2) [K]
-            t_duct_3[i],                                        # 9 - T (duct, 3) [K]
-            (float(column_config['co']) / 100000),              # 10- CO [%]                                                                                                
-            (float(env_P) / 1000),                              # 11- P (ambient) [kPa]
-            -1,                                                 # 12- Air MFM [mg/s]
-            -1,                                                 # 13- PDM
-            -1,                                                 # 14- PDC                                                
-            )
+    # if ignore individual shifts is set, only use the burner offset
+    if ignore_individual_shifts:
+        frappe.log_error("EN50399 {0}: ignoring individual shifts".format(doc_name))
+        start_line_index_o2 = start_line_index_q
+        start_line_index_co2 = start_line_index_q
+        start_line_index_t = start_line_index_q
     
+    # compile the data vectors
+    try:
+        # group 1: q burner
+        gas_mfm = []
+        for i in range(0, (1200/3) + 1):
+            fields = raw_lines[start_line_index_q + i].split(',')
+            gas_mfm.append(fields[column_config['gas_mfm']])                # 1 - Gas MFM [mg/s]
+        # group 2: O2 level
+        o2 = []
+        for i in range(0, (1200/3) + 1):
+            fields = raw_lines[start_line_index_o2 + i].split(',')
+            o2.append(fields[column_config['o2']])                          # 4 - O2 [%]
+        # group 3: CO2 level
+        co2 = []
+        dpt = []
+        for i in range(0, (1200/3) + 1):
+            fields = raw_lines[start_line_index_co2 + i].split(',')
+            co2.append(fields[column_config['co2']])                        # 5 - CO2 [%]
+            dpt.append(fields[column_config['dpt']])                        # 2 - DPT (deltaP) [Pa]
+        # group 4: temperature
+        transmittance = []
+        t_duct_1 = []
+        t_duct_3 = []
+        for i in range(0, (1200/3) + 1):
+            fields = raw_lines[start_line_index_co2 + i].split(',')
+            transmittance.append(fields[column_config['transmission']])     # 3 - Transmittance [%]
+            t_duct_1.append(kelvin(float(fields[column_config['t_duct_1']]))) # 7 - T (duct, 1) [K]
+            t_duct_3.append(kelvin(float(fields[column_config['t_duct_3']]))) # 9 - T (duct, 3) [K]
+        # compile matrix
+        lines = "time (s),Gas MFM (mg/s),DPT (Pa),Transmission (%),O2 (%),CO2 (%),Amb T (K),T_Duct1 (K),T_Duct2 (K),T_Duct3 (K),CO (%),APT (kPa),Air MFM (mg/s),PDM (-),PDC (-)\n"
+        lines = lines + "\n"
+        for i in range(0, (1200/3) + 1):
+            lines += "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}\n".format(
+                3 * i,                                              # 0 - time [sec]
+                gas_mfm[i],                                         # 1 - Gas MFM [mg/s]
+                dpt[i],                                             # 2 - DPT (deltaP) [Pa]
+                transmittance[i],                                   # 3 - Transmission [%]
+                o2[i],                                              # 4 - O2 [%]
+                co2[i],                                             # 5 - CO2 [%]
+                kelvin(float(env_T)),                               # 6 - T (ambient) [K]
+                t_duct_1[i],                                        # 7 - T (duct, 1) [K]
+                -1,                                                 # 8 - T (duct, 2) [K]
+                t_duct_3[i],                                        # 9 - T (duct, 3) [K]
+                (float(column_config['co']) / 100000),              # 10- CO [%]                                                                                                
+                (float(env_P) / 1000),                              # 11- P (ambient) [kPa]
+                -1,                                                 # 12- Air MFM [mg/s]
+                -1,                                                 # 13- PDM
+                -1,                                                 # 14- PDC                                                
+                )
+    except:
+        frappe.throw(_("Vector parsing failed.<br><br>Invalid data range. Please check the input data.<br><br>You can also try ignoring individual shifts."))
+        
     # determine transmission baseline in first 60 seconds (20 readings)
     i0 = 0.0
     for i in range(1, 21):

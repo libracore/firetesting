@@ -111,17 +111,22 @@ function read_raw_data(frm) {
     var d = new frappe.ui.Dialog({
     	'title': 'Read raw data (xlsx)',
     	'fields': [
-            {'fieldname': 'ht', 'fieldtype': 'HTML'}
+            {'fieldname': 'ht', 'fieldtype': 'HTML'},
+            {'fieldname': 'ignore_shift', 'fieldtype': 'Check', 'label': __('Ignore individual shifts')}
         ],
         primary_action: function() {
+            // get values
+            var data = d.get_values();
             // hide form
             d.hide();
             // get file object
+            
             var file = document.getElementById("input_file").files[0];
             // and read the file to the form
-            read_raw_file(frm, file);
+            read_raw_file(frm, file, data.ignore_shift);
 
-        }
+        },
+        primary_action_label: __('Load raw data')
     });
     
     d.fields_dict.ht.$wrapper.html('<p>' + __("Please select the raw data file (xlsx format).") + '</p>' +
@@ -131,7 +136,7 @@ function read_raw_data(frm) {
     d.show();
 }
 
-function read_raw_file(frm, file) {
+function read_raw_file(frm, file, ignore_shift) {
     // read the file 
     var content = "";
     if (file) {
@@ -147,7 +152,7 @@ function read_raw_file(frm, file) {
             var csv = XLSX.utils.sheet_to_csv(workbook.Sheets[first_sheet_name]);
             /* write content to form raw field */
             //cur_frm.set_value('logger_data', csv);
-            convert_raw_data(frm, csv);
+            convert_raw_data(frm, csv, ignore_shift);
         }
         // assign an error handler event
         reader.onerror = function (event) {
@@ -161,12 +166,13 @@ function read_raw_file(frm, file) {
     }
 }
 
-function convert_raw_data(frm, raw) {
+function convert_raw_data(frm, raw, ignore_shift) {
     frappe.call({
         method: 'firetesting.fire_testing.doctype.en_50399.en_50399.convert_data',
         args: { 
             'raw': raw,
-            'doc_name': frm.doc.name
+            'doc_name': frm.doc.name,
+            'ignore_individual_shifts': ignore_shift
         },
         callback: function(r) {
             if (r.message) {
@@ -204,7 +210,8 @@ function import_transfer_file(frm) {
             // and read the file to the form
             read_import_file(frm, file);
 
-        }
+        },
+        primary_action_label: __('Import file')
     });
     
     d.fields_dict.ht.$wrapper.html('<input type="file" id="input_file" />');

@@ -53,7 +53,8 @@ function reload_dialog(title, message) {
             d.hide();
             // reload form
             location.reload();
-        }
+        },
+        primary_action_label: __('OK')
     });
     
     d.fields_dict.ht.$wrapper.html('<p>' + message + '</p>');
