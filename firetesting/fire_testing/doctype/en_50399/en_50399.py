@@ -308,7 +308,16 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50,ignore_individu
                 if float(fields[column_config['burner_output']]) >= (baseline_q + 5):
                     start_line_index_q = i
             except:
-                frappe.log_error("EN 50399 {0}: float(fields[column_config['burner_output']]) not found in line {1}".format(doc_name, i))                      
+                frappe.log_error("EN 50399 {0}: float(fields[column_config['burner_output']]) not found in line {1}".format(doc_name, i))
+        elif i < (start_line_index_q + 400):
+            # premature burner control: check if signal drops again
+            try:
+                if float(fields[column_config['burner_output']]) < (baseline_q + 5):
+                    # this was only a premature burner, reset
+                    start_line_index_q = 0
+                    frappe.log_error("EN 50399 {0}: premature burner signal in line {1}".format(doc_name, i)) 
+            except:
+                frappe.log_error("EN 50399 {0}: float(fields[column_config['burner_output']]) not found in line {1}".format(doc_name, i)) 
         if start_line_index_o2 == 0:
             # O2 level increases <= 0.05%  above threshold
             try:
@@ -348,9 +357,10 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50,ignore_individu
     # if ignore individual shifts is set, only use the burner offset
     if ignore_individual_shifts:
         frappe.log_error("EN50399 {0}: ignoring individual shifts".format(doc_name))
-        start_line_index_o2 = start_line_index_q
-        start_line_index_co2 = start_line_index_q
-        start_line_index_t = start_line_index_q
+        apparatus = frappe.get_doc("Apparatus", doc.test_apparatus)
+        start_line_index_o2 = start_line_index_q + (apparatus.en50399_o2_calibration_delay / 3)
+        start_line_index_co2 = start_line_index_q + (apparatus.en50399_co2_calibration_delay / 3)
+        start_line_index_t = start_line_index_q + (apparatus.en50399_t_calibration_delay / 3)
     
     # compile the data vectors
     try:
@@ -679,17 +689,17 @@ def calculate_results(doc_name):
     if doc.early_termination:
         class_general = "nc"
     else:
-        if doc.flame_spread <= 1.5 and doc.thr_1200s <= 15 and doc.peak_hrr <= 30 and doc.figra <= 150:
+        if doc.flame_spread <= 1.5 and thr[-1] <= 15 and peak_hrr <= 30 and figra_max <= 150:
             class_general = "B2 ca"
-        elif doc.flame_spread <= 2 and doc.thr_1200s <= 30 and doc.peak_hrr <= 60 and doc.figra <= 300:
+        elif doc.flame_spread <= 2 and thr[-1] <= 30 and peak_hrr <= 60 and figra_max <= 300:
             class_general = "C ca"
-        elif doc.thr_1200s <= 70 and doc.peak_hrr <= 400 and doc.figra <= 1300:
+        elif thr[-1] <= 70 and peak_hrr <= 400 and figra_max <= 1300:
             class_general = "D ca"
         else:
             class_general = "nc"
-    if doc.peak_spr <= 0.25 and doc.tsp_1200s <= 50:
+    if peak_spr <= 0.25 and tsp[-1] <= 50:
         class_smoke = "s1"
-    elif doc.peak_spr <= 1.5 and doc.tsp_1200s <= 400:
+    elif peak_spr <= 1.5 and tsp[-1] <= 400:
         class_smoke = "s2"
     else:
         class_smoke = "s3"
