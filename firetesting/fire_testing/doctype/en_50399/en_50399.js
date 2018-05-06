@@ -112,7 +112,7 @@ function read_raw_data(frm) {
     	'title': 'Read raw data (xlsx)',
     	'fields': [
             {'fieldname': 'ht', 'fieldtype': 'HTML'},
-            {'fieldname': 'ignore_shift', 'fieldtype': 'Check', 'label': __('Ignore individual shifts')}
+            {'fieldname': 'ignore_shift', 'fieldtype': 'Check', 'label': __('Ignore individual shifts'), 'default': 1}
         ],
         primary_action: function() {
             // get values
