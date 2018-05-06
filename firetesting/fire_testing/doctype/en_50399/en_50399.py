@@ -309,7 +309,7 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50,ignore_individu
                     start_line_index_q = i
             except:
                 frappe.log_error("EN 50399 {0}: float(fields[column_config['burner_output']]) not found in line {1}".format(doc_name, i))
-        elif i < (start_line_index_q + 400):
+        elif i < (start_line_index_q + 300):
             # premature burner control: check if signal drops again
             try:
                 if float(fields[column_config['burner_output']]) < (baseline_q + 5):
