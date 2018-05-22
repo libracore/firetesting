@@ -360,17 +360,41 @@ function load_elab(frm, file) {
                 cur_frm.set_value('damage_zone_front', workbook.Sheets['export']['H2'].v);
                 cur_frm.set_value('damage_zone_back', workbook.Sheets['export']['I2'].v);
                 cur_frm.set_value('time_after_combustion', workbook.Sheets['export']['J2'].v);
-                cur_frm.set_value('dripping', workbook.Sheets['export']['K2'].v.replace("<", "&lt;").replace(">", "&gt;"));
+                cur_frm.set_value('dripping', (String(workbook.Sheets['export']['K2'].v)).replace("<", "&lt;").replace(">", "&gt;"));
                 cur_frm.set_value('daily_check_file_name', workbook.Sheets['export']['AF2'].v);
 
 		/* Vectors */
-/*    Data Time (INT):export:L2:L402
-    Data HRR (FLOAT): export:M2:M402
-    Data THR (FLOAT): export:N2:N402
-    Data transmission (FLOAT): export:O2:O402
-    Data SPR (FLOAT): export:P2:P402
-    Data TSP (FLOAT): export:Q2:Q402
-/*
+		var time_str = workbook.Sheets['export']['L2'].v;
+		for (var r = 3; r <= 402; r++) {
+		    time_str += "," + workbook.Sheets['export']['L' + r].v;
+		}
+		cur_frm.set_value('data_time', time_str);
+                var hrr_str = workbook.Sheets['export']['M2'].v;
+                for (var r = 3; r <= 402; r++) {
+                    hrr_str += "," + workbook.Sheets['export']['M' + r].v;
+                }
+                cur_frm.set_value('data_hrr', hrr_str);
+                var thr_str = workbook.Sheets['export']['N2'].v;
+                for (var r = 3; r <= 402; r++) {
+                    thr_str += "," + workbook.Sheets['export']['N' + r].v;
+                }
+                cur_frm.set_value('data_thr', thr_str);
+                var transmission_str = workbook.Sheets['export']['O2'].v;
+                for (var r = 3; r <= 402; r++) {
+                    transmission_str += "," + workbook.Sheets['export']['O' + r].v;
+                }
+                cur_frm.set_value('data_transmission', transmission_str);
+                var spr_str = workbook.Sheets['export']['P2'].v;
+                for (var r = 3; r <= 402; r++) {
+                    spr_str += "," + workbook.Sheets['export']['P' + r].v;
+                }
+                cur_frm.set_value('data_spr', spr_str);
+                var tsp_str = workbook.Sheets['export']['Q2'].v;
+                for (var r = 3; r <= 402; r++) {
+                    tsp_str += "," + workbook.Sheets['export']['Q' + r].v;
+                }
+                cur_frm.set_value('data_tsp', tsp_str);
+
 		/* Results */
                 cur_frm.set_value('kt', workbook.Sheets['export']['R2'].v);
                 cur_frm.set_value('hrr_max', workbook.Sheets['export']['S2'].v);
@@ -391,8 +415,6 @@ function load_elab(frm, file) {
 
 		frappe.msgprint( __("ELAB data imported.") );
 	    }
-            //convert_raw_data(frm, csv, ignore_shift);
-            // frappe.msgprint("A1 is " + workbook.Sheets['export']['A1'].v);
 
         }
         // assign an error handler event
