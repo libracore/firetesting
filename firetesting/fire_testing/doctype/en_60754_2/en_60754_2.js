@@ -70,10 +70,14 @@ frappe.ui.form.on('EN 60754 2', {
 
 function fetch_components(frm) {
      // remove all rows
-     cur_frm.get_field('composition_results').grid.grid_rows.forEach(function(row) {
-         row.remove();
-     });
-     
+     var tbl = frm.doc.composition_results || [];
+     var i = tbl.length;
+     while (i--)
+     {
+         cur_frm.get_field("composition_results").grid.grid_rows[i].remove();
+     }
+     cur_frm.refresh();
+
      // get components
      frappe.call({
          "method": "frappe.client.get_list",
