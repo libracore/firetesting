@@ -3,9 +3,13 @@
 
 frappe.ui.form.on('EN 60332 1 2', {
 	refresh: function(frm) {
-        frm.add_custom_button(__("Calculate"), function() {
-            calculate(frm);
-        });
+            frm.add_custom_button(__("Calculate"), function() {
+                calculate(frm);
+            });
+            frm.add_custom_button(__("Calculate mounting"), function() {
+                // set mounting parameters
+                set_mounting(frm);
+            });
 	},
     onload: function(frm) { 
         // check if this is a new entry
@@ -67,4 +71,34 @@ function calculate(frm) {
     else {
         cur_frm.set_value("has_passed", 0);
     }
+}
+
+/* define the mounting parameters */
+function set_mounting(frm) {
+    frappe.call({
+       method: "frappe.client.get",
+       args: {
+            "doctype": "Material",
+            "name": frm.doc.material
+       },
+       callback: function(response) {
+            var mat = response.message;
+            if (mat) {
+               var fat = 480;
+               if (mat.diameter <= 25) {
+                   fat = 60;
+               } else if (mat.diameter <= 50) {
+                   fat = 120;
+               } else if (mat.diameter <= 75) {
+                   fat = 240;
+               } else {
+                   fat = 480;
+               }
+               cur_frm.set_value('flame_application_time', fat); 
+               frappe.show_alert( __("Flame application time set.") );
+            } else {
+               frappe.show_alert( __("Material not found") );
+            }
+       }
+    });
 }
