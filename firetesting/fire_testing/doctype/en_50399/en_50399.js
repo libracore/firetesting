@@ -11,8 +11,11 @@ frappe.ui.form.on('EN 50399', {
         frm.page.add_menu_item(__("Import data from transfer file"), function() {
             // load data from transfer file
             import_transfer_file(frm);
-		});        
+		});
         // add utility buttons
+        frm.add_custom_button(__("Load results from ELAB"), function() {
+            read_elab(frm);
+        });
         frm.add_custom_button(__("Load raw data"), function() {
             read_raw_data(frm);
         });
@@ -298,3 +301,109 @@ function set_mounting(frm) {
         }
     }); 
 }
+
+/* read ELAB files */
+function read_elab(frm) {
+    var d = new frappe.ui.Dialog({
+        'title': 'Read ELAB (xlsx)',
+        'fields': [
+            {'fieldname': 'ht', 'fieldtype': 'HTML'}
+        ],
+        primary_action: function() {
+            // get values
+            var data = d.get_values();
+            // hide form
+            d.hide();
+            // get file object
+            var file = document.getElementById("elab_file").files[0];
+            // and read the file to the form
+            load_elab(frm, file);
+
+        },
+        primary_action_label: __('Load ELAB')
+    });
+
+    d.fields_dict.ht.$wrapper.html('<p>' + __("Please select the ELAB data file (xlsx format).") + '</p>' +
+        '<p>' + __("The file needs to contain an <i>export</i> tab with the transfer information.") + "</p>" +
+        '<input type="file" id="elab_file" />');
+
+    d.show();
+}
+
+function load_elab(frm, file) {
+    // read the file
+    var content = "";
+    if (file) {
+        /* create new reader instance */
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            /* read the file */
+            var data = e.target.result;
+            /* load the workbook */
+            var workbook = XLSX.read(data, {type: 'binary'});
+            var export_sheet_name = workbook.SheetNames['export'];
+            /* convert content to csv */
+            var csv = XLSX.utils.sheet_to_csv(workbook.Sheets[export_sheet_name]);
+            /* write content to form trace field */
+            cur_frm.set_value('calculation_trace', csv);
+            var crono = workbook.Sheets['export']['A2'].v;
+            if (("CRONO-" + crono) != frm.doc.crono) {
+		frappe.msgprint( __("Crono validation failed: invalid Crono number.") );
+	    } else {
+		/* Input data */
+		cur_frm.set_value('operator', workbook.Sheets['export']['B2'].v);
+                cur_frm.set_value('date_of_test', workbook.Sheets['export']['C2'].v);
+                cur_frm.set_value('test_apparatus', workbook.Sheets['export']['D2'].v);
+                cur_frm.set_value('temperature', workbook.Sheets['export']['E2'].v);
+                cur_frm.set_value('pressure', workbook.Sheets['export']['F2'].v);
+                cur_frm.set_value('relative_humidity', workbook.Sheets['export']['G2'].v);
+                cur_frm.set_value('damage_zone_front', workbook.Sheets['export']['H2'].v);
+                cur_frm.set_value('damage_zone_back', workbook.Sheets['export']['I2'].v);
+                cur_frm.set_value('time_after_combustion', workbook.Sheets['export']['J2'].v);
+                cur_frm.set_value('dripping', workbook.Sheets['export']['K2'].v);
+                cur_frm.set_value('daily_check_file_name', workbook.Sheets['export']['AF2'].v);
+
+		/* Vectors */
+/*    Data Time (INT):export:L2:L402
+    Data HRR (FLOAT): export:M2:M402
+    Data THR (FLOAT): export:N2:N402
+    Data transmission (FLOAT): export:O2:O402
+    Data SPR (FLOAT): export:P2:P402
+    Data TSP (FLOAT): export:Q2:Q402
+/*
+		/* Results */
+                cur_frm.set_value('kt', workbook.Sheets['export']['R2'].v);
+                cur_frm.set_value('hrr_max', workbook.Sheets['export']['S2'].v);
+                cur_frm.set_value('hrr_max_time', workbook.Sheets['export']['T2'].v);
+                cur_frm.set_value('transmittance_min', workbook.Sheets['export']['U2'].v);
+                cur_frm.set_value('transmittance_min_time', workbook.Sheets['export']['V2'].v);
+                cur_frm.set_value('spr_max', workbook.Sheets['export']['W2'].v);
+                cur_frm.set_value('spr_max_time', workbook.Sheets['export']['X2'].v);
+                cur_frm.set_value('peak_hrr', workbook.Sheets['export']['S2'].v);
+                cur_frm.set_value('thr_1200s', workbook.Sheets['export']['Y2'].v);
+                cur_frm.set_value('figra', workbook.Sheets['export']['Z2'].v);
+                cur_frm.set_value('peak_spr', workbook.Sheets['export']['W2'].v);
+                cur_frm.set_value('tsp_1200s', workbook.Sheets['export']['AA2'].v);
+                cur_frm.set_value('flame_spread', workbook.Sheets['export']['AB2'].v);
+                cur_frm.set_value('class_general', workbook.Sheets['export']['AC2'].v);
+                cur_frm.set_value('class_smoke', workbook.Sheets['export']['AD2'].v);
+                cur_frm.set_value('class_dripping', workbook.Sheets['export']['AE2'].v);
+
+		frappe.msgprint( __("ELAB data imported.") );
+	    }
+            //convert_raw_data(frm, csv, ignore_shift);
+            // frappe.msgprint("A1 is " + workbook.Sheets['export']['A1'].v);
+
+        }
+        // assign an error handler event
+        reader.onerror = function (event) {
+            frappe.msgprint(__("Error reading file"), __("Error"));
+        }
+        reader.readAsBinaryString(file);
+    }
+    else
+    {
+        frappe.msgprint(__("Please select a file."), __("Information"));
+    }
+}
+
