@@ -416,20 +416,29 @@ function load_elab(frm, file) {
             try {
                 cur_frm.set_value('kt', workbook.Sheets['export']['R2'].v);
                 cur_frm.set_value('hrr_max', workbook.Sheets['export']['S2'].v);
+                cur_frm.set_value('chart_hrr_y_max', workbook.Sheets['export']['S2'].v);
                 cur_frm.set_value('hrr_max_time', workbook.Sheets['export']['T2'].v);
                 cur_frm.set_value('transmittance_min', workbook.Sheets['export']['U2'].v);
                 cur_frm.set_value('transmittance_min_time', workbook.Sheets['export']['V2'].v);
                 cur_frm.set_value('spr_max', workbook.Sheets['export']['W2'].v);
+                if (Number(workbook.Sheets['export']['W2'].v) < 1) {
+                    cur_frm.set_value('chart_spr_y_max', '1');
+                } else {
+                    cur_frm.set_value('chart_spr_y_max', workbook.Sheets['export']['W2'].v);
+                }
                 cur_frm.set_value('spr_max_time', workbook.Sheets['export']['X2'].v);
                 cur_frm.set_value('peak_hrr', workbook.Sheets['export']['S2'].v);
                 cur_frm.set_value('thr_1200s', workbook.Sheets['export']['Y2'].v);
+                cur_frm.set_value('chart_thr_y_max', workbook.Sheets['export']['Y2'].v);                
                 cur_frm.set_value('figra', workbook.Sheets['export']['Z2'].v);
                 cur_frm.set_value('peak_spr', workbook.Sheets['export']['W2'].v);
                 cur_frm.set_value('tsp_1200s', workbook.Sheets['export']['AA2'].v);
+                cur_frm.set_value('chart_tsp_y_max', workbook.Sheets['export']['AA2'].v);
                 cur_frm.set_value('flame_spread', workbook.Sheets['export']['AB2'].v);
                 cur_frm.set_value('class_general', workbook.Sheets['export']['AC2'].v);
                 cur_frm.set_value('class_smoke', workbook.Sheets['export']['AD2'].v);
                 cur_frm.set_value('class_dripping', workbook.Sheets['export']['AE2'].v);
+                cur_frm.set_value('chart_transmittance_y_max', '100');
             }
             catch (err) {
                 frappe.msgprint( __("Error parsing results: ") + err.message, __("Error"));
