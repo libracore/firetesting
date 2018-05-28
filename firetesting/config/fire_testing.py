@@ -120,7 +120,7 @@ def get_data():
 			]
 		},
 		{
-			"label": _("Configuration"),
+			"label": _("Settings"),
 			"icon": "fa fa-cogs",
 			"items": [
 				{
@@ -154,5 +154,25 @@ def get_data():
 					"description": _("Cable Length Calculator"),
 				}
 			]
-		}       
+		},
+		{
+			"label": _("Administration"),
+			"icon": "fa fa-user",
+			"items": [
+				{
+					"type": "report",
+                    "doctype": "Material",
+					"name": "Weekly Calendar",
+					"label": _("Weekly Calendar"),
+					"description": _("Weekly Calendar"),
+					"is_query_report": True
+				},
+                {
+					"type": "doctype",
+					"name": "Calendar Sync Settings",
+					"label": _("Calendar Sync Settings"),
+					"description": _("Calendar Sync Settings"),
+				}
+			]
+		}         
 	]
