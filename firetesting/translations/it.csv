@@ -26,3 +26,6 @@ DocType: Crono Verification,Amount of cable arrived (m),Quantità di cavo arriva
 DocType: Crono Verification,Heading printed on the cable,Dicitura stampigliata sul cavo
 DocType: Crono Verification,Article code (if different),Codice articolo (se diverso)
 DocType: Crono Verification,Lot number of the cable (batch) (if different),N° di lotto del cavo (batch) (se diverso)
+Report: Weekly Calendar,Week,Settimana
+Report: Weekly Calendar,Weekly Calendar,Calendario settimanale
+Report: Weekly Calendar,Year,Anno
