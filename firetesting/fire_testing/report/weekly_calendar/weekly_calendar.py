@@ -26,7 +26,11 @@ def execute(filters=None):
 
 def get_day(date):
 	# get full day events
-	sql_query = "SELECT * FROM `tabEvent` WHERE DATE(`starts_on`) = '{0}' ORDER BY `all_day` DESC".format(date)
+	sql_query = """SELECT * 
+		    FROM `tabEvent` 
+		    WHERE `event_type` = 'Public' 
+		      AND DATE(`starts_on`) = '{0}' 
+		    ORDER BY `all_day` DESC""".format(date)
 	events = frappe.db.sql(sql_query, as_dict=True)
 	str_events = ""
 	for event in events:
