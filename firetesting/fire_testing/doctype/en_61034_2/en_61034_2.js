@@ -47,6 +47,11 @@ frappe.ui.form.on('EN 61034 2', {
 });
 
 function read_raw_data(frm) {
+    // clean file browser cache
+    if (document.getElementById("input_file")) {
+        document.getElementById("input_file").outerHTML = "";
+    }
+    
     var d = new frappe.ui.Dialog({
     	'title': 'Read raw data (txt)',
     	'fields': [
@@ -56,7 +61,7 @@ function read_raw_data(frm) {
             // hide form
             d.hide();
             // get file object
-            var file = document.getElementById("input_file").files[0];
+            var file = document.getElementById("input_file").files[0];            
             // and read the file to the form
             read_raw_file(frm, file);
 

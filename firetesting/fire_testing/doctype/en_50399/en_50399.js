@@ -200,6 +200,11 @@ function recalculate(frm) {
 }
 
 function import_transfer_file(frm) {
+    // clean file browser cache
+    if (document.getElementById("input_file")) {
+        document.getElementById("input_file").outerHTML = "";
+    }
+    
     var d = new frappe.ui.Dialog({
     	'title': 'Import transfer file (CSV)',
     	'fields': [
@@ -304,6 +309,11 @@ function set_mounting(frm) {
 
 /* read ELAB files */
 function read_elab(frm) {
+    // clean file browser cache
+    if (document.getElementById("elab_file")) {
+        document.getElementById("elab_file").outerHTML = "";
+    }
+    
     var d = new frappe.ui.Dialog({
         'title': 'Read ELAB (xlsx)',
         'fields': [
@@ -316,6 +326,7 @@ function read_elab(frm) {
             d.hide();
             // get file object
             var file = document.getElementById("elab_file").files[0];
+
             // and read the file to the form
             load_elab(frm, file);
 
