@@ -348,10 +348,12 @@ function load_elab(frm, file) {
             cur_frm.set_value('calculation_trace', csv);
             var crono = workbook.Sheets['export']['A2'].v;
             if (("CRONO-" + crono) != frm.doc.crono) {
-		frappe.msgprint( __("Crono validation failed: invalid Crono number.") );
+            frappe.msgprint( __("Crono validation failed: invalid Crono number.") );
 	    } else {
-		/* Input data */
-		cur_frm.set_value('operator', workbook.Sheets['export']['B2'].v);
+            var success = true;
+            /* Input data */
+            try {
+                cur_frm.set_value('operator', workbook.Sheets['export']['B2'].v);
                 var test_date_str = String(workbook.Sheets['export']['C2'].v);
                 var test_date_parts = test_date_str.split("-");
                 cur_frm.set_value('date_of_test', 
@@ -367,13 +369,18 @@ function load_elab(frm, file) {
                 cur_frm.set_value('dripping', 
                     (String(workbook.Sheets['export']['K2'].v)).replace("<", "&lt;").replace(">", "&gt;"));
                 cur_frm.set_value('daily_check_file_name', workbook.Sheets['export']['AF2'].v);
-
-		/* Vectors */
-		var time_str = workbook.Sheets['export']['L2'].v;
-		for (var r = 3; r <= 402; r++) {
-		    time_str += "," + workbook.Sheets['export']['L' + r].v;
-		}
-		cur_frm.set_value('data_time', time_str);
+            }
+            catch (err) {
+                frappe.msgprint( __("Error parsing input data: ") + err.message, __("Error"));
+                success = false;
+            }
+            /* Vectors */
+            try {
+                var time_str = workbook.Sheets['export']['L2'].v;
+                for (var r = 3; r <= 402; r++) {
+                    time_str += "," + workbook.Sheets['export']['L' + r].v;
+                }
+                cur_frm.set_value('data_time', time_str);
                 var hrr_str = workbook.Sheets['export']['M2'].v;
                 for (var r = 3; r <= 402; r++) {
                     hrr_str += "," + workbook.Sheets['export']['M' + r].v;
@@ -399,8 +406,14 @@ function load_elab(frm, file) {
                     tsp_str += "," + workbook.Sheets['export']['Q' + r].v;
                 }
                 cur_frm.set_value('data_tsp', tsp_str);
-
-		/* Results */
+            }
+            catch (err) {
+                frappe.msgprint( __("Error parsing vectors: ") + err.message, __("Error"));
+                success = false;                
+            }
+            
+            /* Results */
+            try {
                 cur_frm.set_value('kt', workbook.Sheets['export']['R2'].v);
                 cur_frm.set_value('hrr_max', workbook.Sheets['export']['S2'].v);
                 cur_frm.set_value('hrr_max_time', workbook.Sheets['export']['T2'].v);
@@ -417,8 +430,15 @@ function load_elab(frm, file) {
                 cur_frm.set_value('class_general', workbook.Sheets['export']['AC2'].v);
                 cur_frm.set_value('class_smoke', workbook.Sheets['export']['AD2'].v);
                 cur_frm.set_value('class_dripping', workbook.Sheets['export']['AE2'].v);
-
-		frappe.msgprint( __("ELAB data imported.") );
+            }
+            catch (err) {
+                frappe.msgprint( __("Error parsing results: ") + err.message, __("Error"));
+                success = false;                
+            }
+            
+            if (success) {
+                frappe.msgprint( __("ELAB data imported.") , __("Success"));
+            } 
 	    }
 
         }
