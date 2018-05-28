@@ -359,8 +359,10 @@ function load_elab(frm, file) {
                 cur_frm.set_value('relative_humidity', workbook.Sheets['export']['G2'].v);
                 cur_frm.set_value('damage_zone_front', workbook.Sheets['export']['H2'].v);
                 cur_frm.set_value('damage_zone_back', workbook.Sheets['export']['I2'].v);
-                cur_frm.set_value('time_after_combustion', workbook.Sheets['export']['J2'].v);
-                cur_frm.set_value('dripping', (String(workbook.Sheets['export']['K2'].v)).replace("<", "&lt;").replace(">", "&gt;"));
+                cur_frm.set_value('time_after_combustion', 
+                    (String(workbook.Sheets['export']['J2'].v)).replace("<", "&lt;").replace(">", "&gt;"));
+                cur_frm.set_value('dripping', 
+                    (String(workbook.Sheets['export']['K2'].v)).replace("<", "&lt;").replace(">", "&gt;"));
                 cur_frm.set_value('daily_check_file_name', workbook.Sheets['export']['AF2'].v);
 
 		/* Vectors */
