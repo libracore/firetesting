@@ -3,21 +3,22 @@
 # For license information, please see license.txt
 #
 # call the API from
-#   /api/method/firetesting.fire_testing.utils.calendar.download_calendar
+#   /api/method/firetesting.fire_testing.utils.calendar.download_calendar?secret=[secret]
 #
-# SEURITY NOTICE: this exposes the public calendar on an open API. 
-#       Make sure the above API call is blocked from the internet (only use in intranet).
-#       E.g. when using an apache gateway proxy
-#         ProxyPass /api/method/firetesting.fire_testing.utils.calendar.download_calendar !
-#
+
 from icalendar import Calendar, Event
 from datetime import datetime
 import frappe
 
-def get_calendar():
+def get_calendar(secret):
     # check access
-    
-    if not
+    enabled = frappe.db.get_value("Calendar Sync Settings", "Calendar Sync Settings", "enabled")
+    if float(enabled) == 0:
+	return
+    erp_secret = frappe.db.get_value("Calendar Sync Settings", "Calendar Sync Settings", "secret")
+    if not secret == erp_secret:
+	return
+	
     # initialise calendar
     cal = Calendar()
 
@@ -43,7 +44,11 @@ def get_calendar():
     return cal
 
 @frappe.whitelist(allow_guest=True)
-def download_calendar():
+def download_calendar(secret):
     frappe.local.response.filename = "calendar.ics"
-    frappe.local.response.filecontent = (get_calendar()).to_ical()
+    calendar = get_calendar(secret)
+    if calendar:
+	frappe.local.response.filecontent = calendar.to_ical()
+    else:
+	frappe.local.response.filecontent = "No access"
     frappe.local.response.type = "download"
