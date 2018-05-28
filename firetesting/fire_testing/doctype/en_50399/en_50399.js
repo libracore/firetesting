@@ -352,7 +352,10 @@ function load_elab(frm, file) {
 	    } else {
 		/* Input data */
 		cur_frm.set_value('operator', workbook.Sheets['export']['B2'].v);
-                cur_frm.set_value('date_of_test', workbook.Sheets['export']['C2'].v);
+                var test_date_str = String(workbook.Sheets['export']['C2'].v);
+                var test_date_parts = test_date_str.split("-");
+                cur_frm.set_value('date_of_test', 
+                    (test_date_parts[2] + "-" + test_date_parts[1] + "-" + test_date_parts[0]));
                 cur_frm.set_value('test_apparatus', workbook.Sheets['export']['D2'].v);
                 cur_frm.set_value('temperature', workbook.Sheets['export']['E2'].v);
                 cur_frm.set_value('pressure', workbook.Sheets['export']['F2'].v);
