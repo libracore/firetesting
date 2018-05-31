@@ -152,6 +152,20 @@ function update_calculation(frm) {
     cur_frm.set_value('total_mass', total_non_metallic_weight);
     cur_frm.set_value('weighted_ph', weighted_ph);
     cur_frm.set_value('weighted_conductivity', weighted_conductivity);
+    
+    // classification
+    if (weighted_ph > 4.3) {
+        if (weighted_conductivity < 2.5) {
+            cur_frm.set_value('classification', "a1");
+        } else if (weighted_conductivity < 10) {
+            cur_frm.set_value('classification', "a2");
+        } else {
+            cur_frm.set_value('classification', "a3");
+        }
+    }
+    else {
+        cur_frm.set_value('classification', "a3");
+    }
 }
 
 /* this function is used to calculate the results and push them to the material record */
