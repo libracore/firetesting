@@ -7,8 +7,8 @@ import datetime
 
 def execute(filters=None):
 	# prepare week
-	sql_query = "SELECT DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AS `LastMonday`"
-	monday_date = frappe.db.sql(sql_query, as_dict=True)[0]['LastMonday']
+	sql_query = "SELECT DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 7 DAY) AS `NextMonday`"
+	monday_date = frappe.db.sql(sql_query, as_dict=True)[0]['NextMonday']
 	tuesday_date = monday_date + datetime.timedelta(days=1)
 	wednesday_date = monday_date + datetime.timedelta(days=2)
 	thursday_date = monday_date + datetime.timedelta(days=3)
