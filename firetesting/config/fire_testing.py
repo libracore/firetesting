@@ -161,10 +161,18 @@ def get_data():
 			"items": [
 				{
 					"type": "report",
-                    "doctype": "Material",
+                    "doctype": "Event",
 					"name": "Weekly Calendar",
 					"label": _("Weekly Calendar"),
 					"description": _("Weekly Calendar"),
+					"is_query_report": True
+				},
+				{
+					"type": "report",
+                    "doctype": "Event",
+					"name": "Next Weekly Calendar",
+					"label": _("Next Weekly Calendar"),
+					"description": _("Next Weekly Calendar"),
 					"is_query_report": True
 				},
                 {
