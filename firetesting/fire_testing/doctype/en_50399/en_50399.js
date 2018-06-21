@@ -12,21 +12,24 @@ frappe.ui.form.on('EN 50399', {
             // load data from transfer file
             import_transfer_file(frm);
 		});
-        // add utility buttons
-        frm.add_custom_button(__("Load results from ELAB"), function() {
-            read_elab(frm);
-        });
-        frm.add_custom_button(__("Load raw data"), function() {
-            read_raw_data(frm);
-        });
-        frm.add_custom_button(__("Re-calculate"), function() {
-            recalculate(frm);
-        });
-        frm.add_custom_button(__("Calculate mounting"), function() {
-            // set mounting parameters
-            set_mounting(frm);
-        });
-
+        
+        if (frm.doc.docstatus == 0) {
+            // add utility buttons
+            frm.add_custom_button(__("Load results from ELAB"), function() {
+                read_elab(frm);
+            });
+            frm.add_custom_button(__("Load raw data"), function() {
+                read_raw_data(frm);
+            });
+            frm.add_custom_button(__("Re-calculate"), function() {
+                recalculate(frm);
+            });
+            frm.add_custom_button(__("Calculate mounting"), function() {
+                // set mounting parameters
+                set_mounting(frm);
+            });
+        }
+        
         // check if this is a new entry
         if (frm.doc.__islocal) {
             // create title based on crono
@@ -52,6 +55,20 @@ frappe.ui.form.on('EN 50399', {
                     indicator: 'red'
                 });
             }
+        }
+        
+        // add reset button if submitted and user is Crono Approver
+        if ((frm.doc.docstatus == 1) && (frappe.user.has_role("Crono Approver"))) {
+            frm.add_custom_button(__("Reset submit"), function() {
+                // reset
+                frappe.call({
+                    method: 'reset_submit',
+                    doc: frm.doc,
+                    callback: function(response) {
+                        location.reload();
+                    }
+                });
+            });
         }
         
         // prepare charts

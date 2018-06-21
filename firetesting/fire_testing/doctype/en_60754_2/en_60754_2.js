@@ -18,6 +18,19 @@ frappe.ui.form.on('EN 60754 2', {
                 push_results_to_material(frm);
             });
         }
+        // add reset button if submitted and user is Crono Approver
+        if ((frm.doc.docstatus == 1) && (frappe.user.has_role("Crono Approver"))) {
+            frm.add_custom_button(__("Reset submit"), function() {
+                // reset
+                frappe.call({
+                    method: 'reset_submit',
+                    doc: frm.doc,
+                    callback: function(response) {
+                        location.reload();
+                    }
+                });
+            });
+        }
           
 	},
     onload: function(frm) { 

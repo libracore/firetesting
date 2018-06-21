@@ -114,6 +114,19 @@ class EN610342(Document):
         
         return { 'output': 'Raw data imported and calculated' }
 
+    def reset_submit(self):
+        # this function will reset the submit status
+        sql_query = """UPDATE `tabEN 61034 2` SET `docstatus` = 0 WHERE `name` = '{name}'""".format(name=self.name)
+        frappe.db.sql(sql_query)
+        new_comment = frappe.get_doc({'doctype': 'Communication'})
+        new_comment.comment_type = "Comment"
+        new_comment.content = "Document submit reset"
+        new_comment.reference_doctype = "EN 61034 2"
+        new_comment.status = "Linked"
+        new_comment.reference_name = self.name
+        new_comment.save()
+        return
+        
 # this function parses a decimal string value to a float
 def get_value(value, decimals=2):
     try:
