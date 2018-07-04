@@ -31,6 +31,19 @@ class EN50399(Document):
         self.required_cable = request_length
         self.save()
         return
+        
+    def reset_submit(self):
+        # this function will reset the submit status
+        sql_query = """UPDATE `tabEN 50399` SET `docstatus` = 0 WHERE `name` = '{name}'""".format(name=self.name)
+        frappe.db.sql(sql_query)
+        new_comment = frappe.get_doc({'doctype': 'Communication'})
+        new_comment.comment_type = "Comment"
+        new_comment.content = "Document submit reset"
+        new_comment.reference_doctype = "EN 50399"
+        new_comment.status = "Linked"
+        new_comment.reference_name = self.name
+        new_comment.save()
+        return
 
 """ This function will import a transfer file content into the test record """
 @frappe.whitelist()
