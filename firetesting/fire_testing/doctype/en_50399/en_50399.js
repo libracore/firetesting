@@ -476,6 +476,26 @@ function load_elab(frm, file) {
             if (success) {
                 frappe.msgprint( __("ELAB data imported.") , __("Success"));
             } 
+            
+            /* fetch test apparatus parameters */
+            frappe.call({
+                "method": "frappe.client.get",
+                "args": {
+                    "doctype": "Apparatus",
+                    "name": frm.doc.test_apparatus
+                },
+                "callback": function(response) {
+                    var test_apparatus = response.message;
+
+                    if (test_apparatus) {
+                        cur_frm.set_value('kp', test_apparatus.en50399_kp);
+                        cur_frm.set_value('e1', 17200);
+                        cur_frm.set_value('radius_of_tube', (test_apparatus.en50399_d / 2));
+                    } else {
+                        frappe.msgprint("Test Apparatus not found");
+                    }
+                }
+            });
 	    }
 
         }
