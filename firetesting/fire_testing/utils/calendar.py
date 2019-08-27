@@ -14,11 +14,11 @@ def get_calendar(secret):
     # check access
     enabled = frappe.db.get_value("Calendar Sync Settings", "Calendar Sync Settings", "enabled")
     if float(enabled) == 0:
-	return
+        return
     erp_secret = frappe.db.get_value("Calendar Sync Settings", "Calendar Sync Settings", "secret")
     if not secret == erp_secret:
-	return
-	
+        return
+        
     # initialise calendar
     cal = Calendar()
 
@@ -31,15 +31,15 @@ def get_calendar(secret):
     events = frappe.db.sql(sql_query, as_dict=True)
     # add events
     for erp_event in events:
-	event = Event()
-	event.add('summary', erp_event['subject'])
-	event.add('dtstart', erp_event['starts_on'])
-	if erp_event['ends_on']:
-	    event.add('dtend', erp_event['ends_on'])
-	event.add('dtstamp', erp_event['modified'])
-	event.add('description', erp_event['description'])
-	# add to calendar
-	cal.add_component(event)
+        event = Event()
+        event.add('summary', erp_event['subject'])
+        event.add('dtstart', erp_event['starts_on'])
+        if erp_event['ends_on']:
+            event.add('dtend', erp_event['ends_on'])
+        event.add('dtstamp', erp_event['modified'])
+        event.add('description', erp_event['description'])
+        # add to calendar
+        cal.add_component(event)
     
     return cal
 
@@ -48,7 +48,7 @@ def download_calendar(secret):
     frappe.local.response.filename = "calendar.ics"
     calendar = get_calendar(secret)
     if calendar:
-	frappe.local.response.filecontent = calendar.to_ical()
+        frappe.local.response.filecontent = calendar.to_ical()
     else:
-	frappe.local.response.filecontent = "No access"
+        frappe.local.response.filecontent = "No access"
     frappe.local.response.type = "download"
