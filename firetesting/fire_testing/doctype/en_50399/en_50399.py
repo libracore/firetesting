@@ -376,7 +376,7 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50,ignore_individu
         start_line_index_t = start_line_index_q + (apparatus.en50399_t_calibration_delay // 3)
     
     # compile the data vectors
-    if True: #try:
+    try:
         # group 1: q burner
         gas_mfm = []
         for i in range(0, (1200//3) + 1):
@@ -424,8 +424,8 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50,ignore_individu
                 -1,                                                 # 13- PDM
                 -1,                                                 # 14- PDC                                                
                 )
-    #except:
-    #    frappe.throw(_("Vector parsing failed.<br><br>Invalid data range. Please check the input data.<br><br>You can also try ignoring individual shifts."))
+    except:
+        frappe.throw(_("Vector parsing failed.<br><br>Invalid data range. Please check the input data.<br><br>You can also try ignoring individual shifts."))
         
     # determine transmission baseline in first 60 seconds (20 readings)
     i0 = 0.0
