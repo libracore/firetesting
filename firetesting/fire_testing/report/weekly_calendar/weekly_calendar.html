@@ -1,0 +1,44 @@
+<meta name="pdfkit-orientation" content="Landscape"/>
+
+<p><br></p>
+{% function getWeekNumber(d) { %}
+{%    // Copy date so don't modify original %}
+{%    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); %}
+{%    // Set to nearest Thursday: current date + 4 - current day number %}
+{%    // Make Sunday's day number 7 %}
+{%    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7)); %}
+{%    // Get first day of year %}
+{%    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1)); %}
+{%    // Calculate full weeks to nearest Thursday %}
+{%    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7); %}
+{%    // Return array of year and week number %}
+{%    return [d.getUTCFullYear(), weekNo]; %}
+{%} %}
+
+{% var week = getWeekNumber(new Date(frappe.datetime.nowdate())) %}
+
+<center><h1>{{ __("Weekly Calendar") }}, {{ __("Week") }} {%= week[1] %} {{ __("Year") }} {%= week[0] %}</h1></center>
+
+<style>
+th, td {
+    border: solid 1px black;
+    text-align: center;
+}
+</style>
+
+<table style="width: 100%; border: solid 1px black; ">
+  <tr>
+    <th>{{ __("Monday") }}<br>{%= data[0].Monday %}</th>
+    <th>{{ __("Tuesday") }}<br>{%= data[0].Tuesday %}</th>
+    <th>{{ __("Wednesday") }}<br>{%= data[0].Wednesday %}</th>
+    <th>{{ __("Thursday") }}<br>{%= data[0].Thursday %}</th>
+    <th>{{ __("Friday") }}<br>{%= data[0].Friday %}</th>
+  </tr>
+  <tr>
+    <td>{%= data[1].Monday %}</td>
+    <td>{%= data[1].Tuesday %}</td>
+    <td>{%= data[1].Wednesday %}</td>
+    <td>{%= data[1].Thursday %}</td>
+    <td>{%= data[1].Friday %}</td>
+  </tr>
+</table>

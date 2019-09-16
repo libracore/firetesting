@@ -1,0 +1,23 @@
+{
+ "align_labels_right": 0, 
+ "creation": "2018-03-06 09:56:47.495155", 
+ "css": ".fontlarge {\n  font-size:large;\n  font-weight: bold;\n}\n\n.fontright {\n  text-align: right;\n}\n\n.fontmiddle {\n  text-align: center;\n}\n\n.fullwidth {\n  width:100%;\n}\n\n.blackborder {\n   border: 1px solid black;\n}", 
+ "custom_format": 1, 
+ "disabled": 0, 
+ "doc_type": "EN 60332 1 2", 
+ "docstatus": 0, 
+ "doctype": "Print Format", 
+ "font": "Default", 
+ "html": "<p class=\"fontmiddle\">Foglio da conservare e inserire nella cartellina di laboratorio</p>\n<p class=\"fontright\">stampato: {{ frappe.format_value(frappe.utils.now(), {'fieldtype': 'Date'}) }}</p>\n<table class=\"fullwidth\">\n <tr>\n  <td><p class=\"fontlarge\">Montaggio</p></td>\n  <td></td>\n  <td colspan=\"2\"><p style=\"font-size:large;\">\n    {% set material = frappe.get_doc(\"Material\", doc.material) %}\n    {% if material %}\n      {% if material.shape == \"Circular\" %}Cavo circolare\n      {% else %}Cavo non circolare{% endif %}\n    {% else %}Material missing{% endif %}</p>\n    <p><!-- sistema CPR non disponibile --></p></td>\n </tr>\n <tr>\n  <td style=\"width:25%;\"></td>\n  <td style=\"width:25%;\"></td>\n  <td style=\"width:25%;\"><p class=\"fontlarge fontright\">rif. LSFire</p></td>\n  <td style=\"width:25%;\"><p class=\"fontlarge\">{{ doc.crono or '?' }}</p></td>\n </tr> \n <tr><!--  CRONO reference -->\n  <td class=\"blackborder\"><p class=\"fontlarge\">EN 60332-1-2</p></td>\n  <td></td>\n  <td></td>\n  <td></td>\n </tr>\n <tr><!--  blank row -->\n  <td></td>\n  <td></td>\n  <td></td>\n  <td></td>\n </tr>\n <tr><!--  table with cable -->\n  <td colspan=\"2\" class=\"blackborder fontlarge\">cavo</td>\n  <td class=\"blackborder fontlarge fontmiddle\">colore</td>\n  <td class=\"blackborder fontlarge fontmiddle\">diametro</td>\n </tr>\n <tr>\n  <td colspan=\"2\" class=\"blackborder fontlarge\">{{ material.description or '-' }}</td>\n  <td class=\"blackborder fontmiddle\">{{ material.color or '-' }}</td>\n  <td class=\"blackborder fontmiddle\">{{ \"{:,.1f}\".format(material.diameter) or '-' }} mm</td>\n </tr>\n <tr><!-- blank row -->\n  <td></td>\n  <td></td>\n  <td></td>\n  <td></td>\n </tr>\n <tr><!-- cable mounting -->\n  <td></td>\n  <td class=\"blackborder fontlarge fontmiddle\">N\u00b0 cavi</td>\n  <td></td>\n  <td></td>\n </tr>\n <tr>\n  <td></td>\n  <td class=\"blackborder fontlarge fontmiddle\">1</td>\n  <td></td>\n  <td></td>\n </tr>\n</table>\n\n<p><br></p>\n<p class=\"fontlarge\">tempo di applicazione: {{ doc.flame_application_time }} s</p>\n<p><br></p>\n\n<table>\n <tr><!-- checkpoints -->\n  <td><p style=\"font-weight: bold; \">Cavi secondo CPR e sistema 1+</p></td>\n  <td></td>\n  <td>verifica da parte del montatore</td>\n </tr>\n <tr>\n  <td style=\"width:50%;\">articolo del prodotto</td>\n  <td class=\"blackborder\" style=\"width:25%;\">{{ material.material_code or '-' }}</td>\n  <td style=\"width:25%;\">&#x25A2;</td>\n </tr>\n <tr>\n  <td>ordine di produzione (batch)</td>\n  <td class=\"blackborder\">{{ material.lot_number or '-' }}</td>\n  <td>&#x25A2;</td>\n </tr>\n <tr>\n  <td></td>\n  <td class=\"fontright\">foto dell'etichetta</td>\n  <td>&#x25A2;</td>\n </tr>\n <tr>\n  <td></td>\n  <td></td>\n  <td></td>\n </tr>\n <tr>\n  <td></td>\n  <td class=\"fontright\" style=\"font-weight: bold;\">firma del montatore:</td>\n  <td></td>\n </tr>\n</table>\n\n<!-- FOOTER -->\n<div id=\"footer-html\" class=\"visible-pdf\">\n<table style=\"width: 100%; border-top: 1px solid black;\">\n  <tbody>\n<tr>\n    <td style=\"width: 40%;\"><strong>L.S. FIRE TESTING INSTITUTE Srl</strong><br>MD 283 istruzioni per i cavi - bunsen</td>\n    <td style=\"width: 20%;\" class=\"fontmiddle\">v5</td>\n    <td style=\"width: 40%;\" class=\"fontright\"><strong>Page <span class=\"page\"></span>/<span class=\"topage\"></span></strong></td>\n  </tr>\n</tbody>\n</table>\n</div>", 
+ "idx": 0, 
+ "line_breaks": 0, 
+ "modified": "2018-05-17 14:39:14.183855", 
+ "modified_by": "Administrator", 
+ "module": "Fire Testing", 
+ "name": "EN 60332-1-2 Instructions", 
+ "owner": "Administrator", 
+ "print_format_builder": 0, 
+ "print_format_type": "Server", 
+ "show_section_headings": 0, 
+ "standard": "Yes"
+}

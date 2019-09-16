@@ -1,3 +1,29 @@
-.attachment-row>.close {
+/* deactivate delete button for attachments (deactivated by request #574) */
+/*.attachment-row>.close {
 	display: none!important;
+}*/
+
+/* define black borders for tables */
+.blackborder {
+   border: 1px solid black;
+}
+.blackborder-left {
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  border-bottom: 1px solid black;
+}
+.blackborder-right {
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+}
+.blackborder-middle {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+/* include alternative font faces */
+@font-face {
+    font-family: myTimes;
+    src: url('/files/times.woff');
 }

@@ -30,35 +30,28 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
-					"name": "Test 10",
+					"name": "EN 50399",
 					"label": _("Test 10 - EN 50399 Burner"),
 					"description": _("Test 10 - EN 50399 Burner")
 				},
 				{
 					"type": "doctype",
-					"name": "Test 11",
+					"name": "EN 60332 1 2",
 					"label": _("Test 11 - EN 60332-1-2 Flame propagation"),
 					"description": _("Test 11 - EN 60332-1-2 Flame propagation")
 				},
 				{
 					"type": "doctype",
-					"name": "Test 12",
+					"name": "EN 61034 2",
 					"label": "Test 12 - EN 61034-2 Smoke density",
 					"description": _("Test 12 - EN 61034-2 Smoke density")
 				},
 				{
 					"type": "doctype",
-					"name": "Test 13",
-					"label": _("Test 13 - EN 60754-2 Accidity"),
-					"description": _("Test 13 - EN 60754-2 Accidity")
-				},
-                                {
-                                        "type": "doctype",
-                                        "name": "Other test",
-                                        "label": _("Other test"),
-                                        "description": _("Other test")
-                                }
-
+					"name": "EN 60754 2",
+					"label": _("Test 13 - EN 60754-2 Acidity"),
+					"description": _("Test 13 - EN 60754-2 Acidity")
+				}
 			]
 		},
 		{
@@ -67,9 +60,9 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
-					"name": "Test request",
-					"label": _("Test request"),
-					"description": _("Test request"),
+					"name": "Customer Test Request",
+					"label": _("Customer Test Request"),
+					"description": _("Customer Test Request"),
 				},
 				{
 					"type": "doctype",
@@ -88,7 +81,106 @@ def get_data():
 					"name": "EXAP calculation",
 					"label": _("EXAP calculation"),
 					"description": _("EXAP calculation")
+				},
+				{
+					"type": "doctype",
+					"name": "Crono Verification",
+					"label": _("Crono Verification"),
+					"description": _("Crono Verification")
 				}
 			]
-		}
+		},
+		{
+			"label": _("Reports"),
+			"icon": "fa fa-file-text-o",
+			"items": [
+				{
+					"type": "report",
+                    "doctype": "Material",
+					"name": "Unidentified material",
+					"label": _("Unidentified material"),
+					"description": _("Unidentified material"),
+					"is_query_report": True
+				},
+				{
+					"type": "report",
+                    "doctype": "Material",
+					"name": "Incomplete material",
+					"label": _("Incomplete material"),
+					"description": _("Incomplete material"),
+					"is_query_report": True
+				},
+				{
+					"type": "report",
+                    "doctype": "Material",
+					"name": "Acidity Database",
+					"label": _("Acidity Database"),
+					"description": _("Acidity Database"),
+				}
+			]
+		},
+		{
+			"label": _("Settings"),
+			"icon": "fa fa-cogs",
+			"items": [
+				{
+					"type": "doctype",
+					"name": "Apparatus",
+					"label": _("Test Apparatus"),
+					"description": _("Test Apparatus"),
+				},
+                {
+					"type": "doctype",
+					"name": "Laboratory",
+					"label": _("Laboratory"),
+					"description": _("Laboratory"),
+				},
+                {
+					"type": "doctype",
+					"name": "Picture Description",
+					"label": _("Picture Description"),
+					"description": _("Picture Description"),
+				}
+			]
+		},
+		{
+			"label": _("Tools"),
+			"icon": "fa fa-wrench",
+			"items": [
+				{
+					"type": "page",
+					"name": "cable_length_calculator",
+					"label": _("Cable Length Calculator"),
+					"description": _("Cable Length Calculator"),
+				}
+			]
+		},
+		{
+			"label": _("Administration"),
+			"icon": "fa fa-user",
+			"items": [
+				{
+					"type": "report",
+                    "doctype": "Event",
+					"name": "Weekly Calendar",
+					"label": _("Weekly Calendar"),
+					"description": _("Weekly Calendar"),
+					"is_query_report": True
+				},
+				{
+					"type": "report",
+                    "doctype": "Event",
+					"name": "Next Weekly Calendar",
+					"label": _("Next Weekly Calendar"),
+					"description": _("Next Weekly Calendar"),
+					"is_query_report": True
+				},
+                {
+					"type": "doctype",
+					"name": "Calendar Sync Settings",
+					"label": _("Calendar Sync Settings"),
+					"description": _("Calendar Sync Settings"),
+				}
+			]
+		}         
 	]

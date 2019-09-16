@@ -5,16 +5,12 @@ def get_data():
       'fieldname': 'crono',
       'transactions': [
          {
-            'label': _('Tests'),
-            'items': ['Test 10', 'Test 11', 'Test 12', 'Test 13', 'Other test']
-         },
-         {
             'label': _('Documents'),
-            'items': ['Test request', 'Sample identification', 'Technical data sheet']
+            'items': ['Customer Test Request', 'Sample identification', 'Technical data sheet', 'Crono Verification']
          },
          {
-            'label': _('Records'),
-            'items': ['Material']
+            'label': _('Cable tests'),
+            'items': ['EN 50399', 'EN 60332 1 2', 'EN 61034 2', 'EN 60754 2']
          }
       ]
    }

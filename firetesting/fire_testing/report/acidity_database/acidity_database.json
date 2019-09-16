@@ -1,0 +1,34 @@
+{
+ "add_total_row": 0, 
+ "apply_user_permissions": 1, 
+ "creation": "2018-03-14 16:10:42.499267", 
+ "disabled": 0, 
+ "docstatus": 0, 
+ "doctype": "Report", 
+ "idx": 0, 
+ "is_standard": "Yes", 
+ "json": "{\"add_total_row\": 0, \"sort_by\": \"Material.modified\", \"add_totals_row\": 0, \"sort_order\": \"desc\", \"sort_by_next\": null, \"filters\": [[\"Material\", \"type\", \"=\", \"Component\"]], \"sort_order_next\": \"desc\", \"columns\": [[\"name\", \"Material\"], [\"material_code\", \"Material\"], [\"customer\", \"Material\"], [\"description\", \"Material\"], [\"ph\", \"Material\"], [\"conductivity\", \"Material\"], [\"reference\", \"Material\"]]}", 
+ "letter_head": "Default Letter Head", 
+ "modified": "2018-03-18 17:42:18.594181", 
+ "modified_by": "Administrator", 
+ "module": "Fire Testing", 
+ "name": "Acidity Database", 
+ "owner": "Administrator", 
+ "ref_doctype": "Material", 
+ "report_name": "Acidity Database", 
+ "report_type": "Report Builder", 
+ "roles": [
+  {
+   "role": "System Manager"
+  }, 
+  {
+   "role": "Crono User"
+  }, 
+  {
+   "role": "Crono Manager"
+  }, 
+  {
+   "role": "All"
+  }
+ ]
+}
