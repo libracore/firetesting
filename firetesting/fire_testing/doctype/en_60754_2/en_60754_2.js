@@ -1,4 +1,4 @@
-// Copyright (c) 2018, libracore GmbH and contributors
+// Copyright (c) 2018-2019, libracore and contributors
 // For license information, please see license.txt
 
 frappe.ui.form.on('EN 60754 2', {
@@ -238,7 +238,7 @@ function push_results_to_material(frm) {
     });
     
     // push results to material records
-    for (i = 0; i < materials.length; i++) {
+    for (var i = 0; i < materials.length; i++) {
         if ((phs[i] != 0) && (conductivities[i] != 0)) {
             frappe.call({
                 method: 'firetesting.fire_testing.doctype.material.material.update_measurements',
