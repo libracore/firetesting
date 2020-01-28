@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 from frappe import _
+from statistics import mean
 
 class EN610342(Document):
     def set_mounting(self):
@@ -101,12 +102,18 @@ class EN610342(Document):
         time_short = time_short[:-1]
         transmittance_short = transmittance_short[:-1]
         temperature_short = temperature_short[:-1]
+        incident_light_intensity = mean(transmittance[0:39])      # first 120 sec (40 datapoints à 3 sec)
+        min_intensity = min_transmittance / incident_light_intensity
+        result_amd2 = min_intensity ** (40 / (self.number_of_cables * self.diameter))
         
         # store output to document
         self.raw_time = time_short
         self.raw_transmittance = transmittance_short
         self.raw_temperature = temperature_short
         self.min_transmittance = min_transmittance
+        self.incident_light_intensity = incident_light_intensity
+        self.min_intensity = 100 * min_intensity                    # in percent
+        self.result = 100 * result_amd2                             # in percent
         self.starting_temperature = starting_temperature
         self.maximum_temperature = max_temperature
         self.end_time = end_time
