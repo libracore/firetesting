@@ -113,7 +113,10 @@ class EN610342(Document):
         self.min_transmittance = min_transmittance
         self.incident_light_intensity = incident_light_intensity
         self.min_intensity = 100 * min_intensity                    # in percent
-        self.result = 100 * result_amd2                             # in percent
+        if self.diameter <= 20: 
+            self.result = self.min_intensity
+        else:
+            self.result = 100 * result_amd2                             # in percent
         self.starting_temperature = starting_temperature
         self.maximum_temperature = max_temperature
         self.end_time = end_time
