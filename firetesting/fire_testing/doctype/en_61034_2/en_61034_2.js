@@ -55,6 +55,8 @@ frappe.ui.form.on('EN 61034 2', {
                     indicator: 'red'
                 });
             }
+            // set operator
+            cur_frm.set_value("operator", frappe.session.user);
         }
 	},
 });

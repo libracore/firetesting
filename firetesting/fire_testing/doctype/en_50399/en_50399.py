@@ -7,6 +7,7 @@ import frappe
 from frappe.model.document import Document
 import math
 from frappe import _
+from decimal import Decimal, ROUND_HALF_UP
 
 class EN50399(Document):
     def onload(self):
@@ -769,22 +770,26 @@ def kelvin(temp):
 def calculate_mounting(diameter=5.0):
     diameter = float(diameter)
     if diameter <= 5:
-        d = round(diameter, 1)
-        n = int(100 / (d * d))
+        d = proper_round(diameter, 1)
+        n = proper_round((100 / (d * d)), 0)
         number_of_cables = "15 x {0:.0f}".format(n)
         n = 15 * n
-        width = round(10*15 + 10*14, 1)
+        width = proper_round(10*15 + 10*14, 1)
         spacing = 10
     elif diameter >= 20:
-        n = int(320 / (round(diameter, 0) + 20))
+        n = int(320 / (proper_round(diameter, 0) + 20))
         number_of_cables = "{0:.0f}".format(n)
         spacing = 20
-        width = round(diameter * n + (n - 1) * spacing, 1)
+        width = proper_round(diameter * n + (n - 1) * spacing, 1)
     else:
-        spacing = round(diameter, 1)
-        n = int((300 + round(diameter, 0)) / (2 * round(diameter, 0)))
+        spacing = proper_round(diameter, 1)
+        n = int((300 + proper_round(diameter, 0)) / (2 * proper_round(diameter, 0)))
         number_of_cables = "{0:.0f}".format(n)
-        width = round(diameter * n + (n - 1) * spacing, 1)
+        width = proper_round(diameter * n + (n - 1) * spacing, 1)
     # define length of cable required [m]
-    request_length = round(3.7 * n, 2)
+    request_length = proper_round(3.7 * n, 2)
     return number_of_cables, width, spacing, request_length
+
+# python round will round to nearest even number, i.e. 2.5 -> 2 but 1.5 -> 2
+def proper_round(number, decimals):
+    return float(Decimal(number).quantize(decimals, ROUND_HALF_UP))
