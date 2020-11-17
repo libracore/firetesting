@@ -8,6 +8,7 @@ from frappe.model.document import Document
 import math
 from frappe import _
 from decimal import Decimal, ROUND_HALF_UP
+from math import floor
 
 class EN50399(Document):
     def onload(self):
@@ -770,22 +771,22 @@ def kelvin(temp):
 def calculate_mounting(diameter=5.0):
     diameter = float(diameter)
     if diameter <= 5:
-        d = proper_round(diameter, 1)
-        n = proper_round((100 / (d * d)), 0)
+        d = proper_round(diameter, Decimal('0.1'))
+        n = floor((100 / (d * d)))
         number_of_cables = "15 x {0:.0f}".format(n)
         n = 15 * n
-        width = proper_round(10*15 + 10*14, 1)
+        width = proper_round(10*15 + 10*14, Decimal('0.1'))
         spacing = 10
     elif diameter >= 20:
-        n = int(320 / (proper_round(diameter, 0) + 20))
+        n = floor(320 / (proper_round(diameter, Decimal('1')) + 20))
         number_of_cables = "{0:.0f}".format(n)
         spacing = 20
-        width = proper_round(diameter * n + (n - 1) * spacing, 1)
+        width = proper_round(diameter * n + (n - 1) * spacing, Decimal('0.1'))
     else:
-        spacing = proper_round(diameter, 1)
-        n = int((300 + proper_round(diameter, 0)) / (2 * proper_round(diameter, 0)))
+        spacing = proper_round(diameter, Decimal('0.1'))
+        n = floor((300 + proper_round(diameter, Decimal('1'))) / (2 * proper_round(diameter, Decimal('1'))))
         number_of_cables = "{0:.0f}".format(n)
-        width = proper_round(diameter * n + (n - 1) * spacing, 1)
+        width = proper_round(diameter * n + (n - 1) * spacing, Decimal('0.1'))
     # define length of cable required [m]
     request_length = proper_round(3.7 * n, 2)
     return number_of_cables, width, spacing, request_length
