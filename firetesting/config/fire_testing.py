@@ -87,7 +87,20 @@ def get_data():
 					"name": "Crono Verification",
 					"label": _("Crono Verification"),
 					"description": _("Crono Verification")
-				}
+				},
+                                {
+                                        "type": "doctype",
+                                        "name": "Inspection Attachment",
+                                        "label": _("Inspection Attachment"),
+                                        "description": _("Inspection Attachment")
+                                },
+                                {
+                                        "type": "doctype",
+                                        "name": "Certification Attachment",
+                                        "label": _("Certification Attachment"),
+                                        "description": _("Certification Attachment")
+                                }
+
 			]
 		},
 		{
@@ -140,7 +153,14 @@ def get_data():
 					"name": "Picture Description",
 					"label": _("Picture Description"),
 					"description": _("Picture Description"),
-				}
+				},
+                {
+                                        "type": "doctype",
+                                        "name": "Target Class",
+                                        "label": _("Target Class"),
+                                        "description": _("Target Class"),
+                                }
+
 			]
 		},
 		{

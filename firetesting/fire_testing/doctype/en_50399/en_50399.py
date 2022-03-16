@@ -373,26 +373,26 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50,ignore_individu
     if ignore_individual_shifts:
         frappe.log_error("EN50399 {0}: ignoring individual shifts".format(doc_name))
         apparatus = frappe.get_doc("Apparatus", doc.test_apparatus)
-        start_line_index_o2 = start_line_index_q + (apparatus.en50399_o2_calibration_delay / 3)
-        start_line_index_co2 = start_line_index_q + (apparatus.en50399_co2_calibration_delay / 3)
-        start_line_index_t = start_line_index_q + (apparatus.en50399_t_calibration_delay / 3)
+        start_line_index_o2 = start_line_index_q + (apparatus.en50399_o2_calibration_delay // 3)
+        start_line_index_co2 = start_line_index_q + (apparatus.en50399_co2_calibration_delay // 3)
+        start_line_index_t = start_line_index_q + (apparatus.en50399_t_calibration_delay // 3)
     
     # compile the data vectors
     try:
         # group 1: q burner
         gas_mfm = []
-        for i in range(0, (1200/3) + 1):
+        for i in range(0, (1200//3) + 1):
             fields = raw_lines[start_line_index_q + i].split(',')
             gas_mfm.append(fields[column_config['gas_mfm']])                # 1 - Gas MFM [mg/s]
         # group 2: O2 level
         o2 = []
-        for i in range(0, (1200/3) + 1):
+        for i in range(0, (1200//3) + 1):
             fields = raw_lines[start_line_index_o2 + i].split(',')
             o2.append(fields[column_config['o2']])                          # 4 - O2 [%]
         # group 3: CO2 level
         co2 = []
         dpt = []
-        for i in range(0, (1200/3) + 1):
+        for i in range(0, (1200//3) + 1):
             fields = raw_lines[start_line_index_co2 + i].split(',')
             co2.append(fields[column_config['co2']])                        # 5 - CO2 [%]
             dpt.append(fields[column_config['dpt']])                        # 2 - DPT (deltaP) [Pa]
@@ -400,7 +400,7 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50,ignore_individu
         transmittance = []
         t_duct_1 = []
         t_duct_3 = []
-        for i in range(0, (1200/3) + 1):
+        for i in range(0, (1200//3) + 1):
             fields = raw_lines[start_line_index_co2 + i].split(',')
             transmittance.append(fields[column_config['transmission']])     # 3 - Transmittance [%]
             t_duct_1.append(kelvin(float(fields[column_config['t_duct_1']]))) # 7 - T (duct, 1) [K]
@@ -408,7 +408,7 @@ def convert_data(raw, doc_name, env_T=20, env_P=96000, env_rh=50,ignore_individu
         # compile matrix
         lines = "time (s),Gas MFM (mg/s),DPT (Pa),Transmission (%),O2 (%),CO2 (%),Amb T (K),T_Duct1 (K),T_Duct2 (K),T_Duct3 (K),CO (%),APT (kPa),Air MFM (mg/s),PDM (-),PDC (-)\n"
         lines = lines + "\n"
-        for i in range(0, (1200/3) + 1):
+        for i in range(0, (1200//3) + 1):
             lines += "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}\n".format(
                 3 * i,                                              # 0 - time [sec]
                 gas_mfm[i],                                         # 1 - Gas MFM [mg/s]

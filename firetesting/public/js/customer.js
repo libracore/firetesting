@@ -3,7 +3,7 @@ try {
     {
         'label': 'Fire testing',
         'items': [
-            'Classification', 'Crono', 'Material'
+            'Classification', 'Crono', 'Material', 'Inspection Attachment', 'Certification Attachment'
         ]
     }
 ]);

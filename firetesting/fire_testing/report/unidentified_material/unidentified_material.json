@@ -1,29 +1,30 @@
 {
- "add_total_row": 0, 
- "apply_user_permissions": 1, 
- "creation": "2018-01-29 17:49:02.018204", 
- "disabled": 0, 
- "docstatus": 0, 
- "doctype": "Report", 
- "idx": 0, 
- "is_standard": "Yes", 
- "json": "{\"add_total_row\": 0, \"sort_by\": \"Material.modified\", \"add_totals_row\": 0, \"sort_order\": \"desc\", \"sort_by_next\": null, \"filters\": [[\"Material\", \"crono\", \"not like\", \"%CRONO%\"], [\"Material\", \"type\", \"!=\", \"Component\"]], \"sort_order_next\": \"desc\", \"columns\": [[\"name\", \"Material\"], [\"material_code\", \"Material\"], [\"customer\", \"Material\"], [\"description\", \"Material\"], [\"crono\", \"Material\"]]}", 
- "modified": "2018-04-15 00:17:57.470794", 
- "modified_by": "Administrator", 
- "module": "Fire Testing", 
- "name": "Unidentified material", 
- "owner": "Administrator", 
- "query": "SELECT \n  `name` AS `Material:Link/Material:100`, \n  `material_code` AS `Article number::100`, \n  `customer` AS `Customer:Link/Customer:200`, \n  `description` AS `Description::200` \nFROM `tabMaterial` \nWHERE \n  `type` != \"Component\" AND\n  `name` NOT IN \n  (SELECT `material` FROM `tabCrono` WHERE `material` IS NOT NULL)", 
- "ref_doctype": "Material", 
- "report_name": "Unidentified material", 
- "report_type": "Query Report", 
+ "add_total_row": 0,
+ "creation": "2018-01-29 17:49:02.018204",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "idx": 0,
+ "is_standard": "Yes",
+ "json": "{\"add_total_row\": 0, \"sort_by\": \"Material.modified\", \"add_totals_row\": 0, \"sort_order\": \"desc\", \"sort_by_next\": null, \"filters\": [[\"Material\", \"crono\", \"not like\", \"%CRONO%\"], [\"Material\", \"type\", \"!=\", \"Component\"]], \"sort_order_next\": \"desc\", \"columns\": [[\"name\", \"Material\"], [\"material_code\", \"Material\"], [\"customer\", \"Material\"], [\"description\", \"Material\"], [\"crono\", \"Material\"]]}",
+ "modified": "2019-10-28 09:29:19.278429",
+ "modified_by": "Administrator",
+ "module": "Fire Testing",
+ "name": "Unidentified material",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "SELECT \n  `name` AS `Material:Link/Material:100`, \n  `material_code` AS `Article number::100`, \n  `customer` AS `Customer:Link/Customer:200`, \n  `description` AS `Description::200` \nFROM `tabMaterial` \nWHERE \n  `type` != \"Component\" AND\n  `name` NOT IN \n  (SELECT `material` FROM `tabCrono` WHERE `material` IS NOT NULL\n   UNION SELECT `material` FROM `tabCrono Material`)",
+ "ref_doctype": "Material",
+ "report_name": "Unidentified material",
+ "report_type": "Query Report",
  "roles": [
   {
    "role": "System Manager"
-  }, 
+  },
   {
    "role": "Crono User"
-  }, 
+  },
   {
    "role": "Crono Manager"
   }
