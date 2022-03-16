@@ -85,3 +85,8 @@ function average(values){
   var avg = sum / values.length;
   return avg;
 }
+
+// access protection: remove sections
+$('.form-heatmap').hide();
+$('.form-stats').hide();
+

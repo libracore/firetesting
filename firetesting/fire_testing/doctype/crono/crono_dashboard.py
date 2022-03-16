@@ -6,7 +6,7 @@ def get_data():
       'transactions': [
          {
             'label': _('Documents'),
-            'items': ['Customer Test Request', 'Sample identification', 'Technical data sheet', 'Crono Verification']
+            'items': ['Customer Test Request', 'Sample identification', 'Technical data sheet', 'Crono Verification', 'Inspection Attachment', 'Certification Attachment']
          },
          {
             'label': _('Cable tests'),

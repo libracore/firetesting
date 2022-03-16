@@ -37,7 +37,8 @@ doctype_js = {
     "EN 60754 2" :    "public/js/fire-common.js",
     "Crono Verification" : "public/js/fire-common.js",
 	"Sales Order": "public/js/sales_order.js",
-    "Customer": "public/js/customer.js"
+    "Customer": ["public/js/fire-common.js", "public/js/customer.js"],
+    "Crono":  "public/js/fire-common.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
