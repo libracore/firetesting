@@ -53,7 +53,8 @@
    "bold": 0,
    "collapsible": 0,
    "columns": 0,
-   "fetch_if_empty": 0,
+   "fetch_from": "crono.customer",
+   "fetch_if_empty": 1,
    "fieldname": "customer",
    "fieldtype": "Link",
    "hidden": 0,
@@ -255,7 +256,7 @@
  "issingle": 0,
  "istable": 0,
  "max_attachments": 0,
- "modified": "2022-03-16 14:47:46.916541",
+ "modified": "2022-03-16 22:32:11.845159",
  "modified_by": "Administrator",
  "module": "fire_testing",
  "name": "Certification Attachment",
@@ -301,7 +302,7 @@
    "write": 1
   }
  ],
- "quick_entry": 1,
+ "quick_entry": 0,
  "read_only": 0,
  "read_only_onload": 0,
  "show_name_in_global_search": 0,

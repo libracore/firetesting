@@ -87,6 +87,41 @@ function average(values){
 }
 
 // access protection: remove sections
-$('.form-heatmap').hide();
-$('.form-stats').hide();
+function access_protection() {
+    if (!frappe.user.has_role("Limited Access")) {
+        // disable all attachments
+        var styleSheet = document.createElement("style");
+        styleSheet.innerText = ".attachment-row { display: none; }";
+        document.head.appendChild(styleSheet);
+        
+        // show public files
+        setTimeout(function () {
+            var files = document.getElementsByClassName("attachment-row");
+            for (var i = 0; i < files.length; i++) {
+                if (!files[i].innerHTML.includes("private")) {
+                    files[i].style.display = "block";
+                }
+            }
+        }, 500);
+    } 
+}
 
+// access protection triggers
+frappe.ui.form.on("Customer", {
+    refresh(frm) { 
+        $('.form-heatmap').hide();
+        $('.form-stats').hide();
+        if (!frappe.user.has_role("Limited Access")) {
+            $('.form-dashboard').hide();
+        }
+        access_protection(); }
+});
+frappe.ui.form.on("Crono", {
+    refresh(frm) { access_protection(); }
+});
+frappe.ui.form.on("Certification Attachment", {
+    refresh(frm) { access_protection(); }
+});
+frappe.ui.form.on("Inspection Attachment", {
+    refresh(frm) { access_protection(); }
+});
